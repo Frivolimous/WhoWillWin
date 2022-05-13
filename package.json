@@ -1,0 +1,32 @@
+{
+  "name": "space-garden",
+  "version": "0.0.2",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server --open",
+    "build": "webpack"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/howler": "^2.1.2",
+    "@types/lodash": "^4.14.149",
+    "@types/webfontloader": "^1.6.29",
+    "@webpack-cli/serve": "^1.6.1",
+    "ts-loader": "^6.2.1",
+    "typescript": "^4.6.4",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "pixi.js": "^6.1.3",
+    "howler": "^2.1.3",
+    "webfontloader": "^1.6.28"
+  }
+}

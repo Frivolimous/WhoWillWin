@@ -1,0 +1,353 @@
+/* core stuff - shouldn't need to ever change */
+
+body {
+    margin: 0px;
+}
+
+#main {
+    width: 100vw;
+    height: 100vh;
+}
+/* Main UI */
+.main-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    height: 50vh;
+}
+
+.main-ui .button-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    font-size: 7em;
+}
+
+.sub-title {
+    font-size: 4em;
+}
+
+.setup-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    gap: 100px;
+}
+
+.round-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    gap: 100px;
+}
+
+.score-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    gap: 100px;
+}
+
+.end-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    gap: 100px;
+}
+
+.score-ui .content {
+    display: flex;
+}
+
+.leaderboard, table, th, td{
+    border: 3px solid black;
+}
+
+table {
+    width: 90%;
+    border-collapse: collapse;
+    font-size: 2em;
+}
+
+th {
+    background-color: #999;
+}
+
+td {
+    background-color: #fff;
+}
+
+.table-container {
+    width: 500px;
+    background-color: #ccc;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.round-top {
+    display: flex;
+    justify-content: left;
+    align-items: flex-start;
+    gap: 100px;
+}
+
+.player-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+.card-section {
+    display: flex;
+    gap: 5px;
+}
+
+.horizontal-stack {
+    display: flex;
+    justify-content: left;
+    align-items: flex-start;
+    gap: 20vw;
+}
+
+.vertical-stack {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.round-ui .horizontal-stack {
+    display: flex;
+    justify-content: left;
+    align-items: flex-start;
+}
+
+.round-ui .vertical-stack {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.name-element {
+    border: 2px solid black;
+    width: 200px;
+    height: 50px;
+}
+
+.name-title {
+    font-size: 3em;
+}
+
+.delete-button {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    color: #fff;
+    background: #000;
+    cursor: pointer;
+    font-size: 1.5em;
+}
+
+.card {
+    width: 105px;
+    height: 150px;
+    background-color: #999;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+    padding-top: 25px;
+}
+
+.timer {
+    position: absolute;
+    border-radius: 100px;
+    background: #000;
+    width: 50px;
+    height: 50px;
+    color: #fff;
+    top: 130px;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 50px;
+    user-select: none;
+}
+
+.big-text {
+    font-size: 2em;
+}
+
+.bigger-text {
+    font-size: 4em;
+}
+
+.vote-button {
+    position: relative;
+    width: 200px;
+    height: 50px;
+    color: #fff;
+    background: #000;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.5em;
+    margin: 5px;
+}
+
+.vote-button.highlighted {
+    border: 6px solid #0ff;
+}
+
+/* Sidebar and Sidebar Stuff */
+.info-button {
+    position: relative;
+    width: 200px;
+    height: 50px;
+    color: #fff;
+    background: #000;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.5em;
+    margin: 5px;
+}
+
+.small-button {
+    position: relative;
+    width: 4em;
+    height: 2em;
+    color: #fff;
+    background: #000;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    margin: 5px; 
+}
+
+.home-button {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    color: #fff;
+    background: #000;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 5px;
+    left: 10px;
+    top: 10px;
+}
+
+.info-button:hover {
+    background: #009;
+}
+
+.notification {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: #e30;
+    border-radius: 5px;
+    right: -5px;
+    top: -5px;
+}
+
+/* info Panel and info Panel Stuff */
+
+.info-panel {
+    font-size: 1vw;
+    position: absolute;
+    height: 80vh;
+    background: #f1f1f1;
+    border: 6px solid black;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    left: 0px;
+    top: 0px;
+    margin: 5vh;
+    right: 300px;
+    justify-content: space-between;
+}
+
+.info-panel .top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height:80%;
+}
+
+.info-panel .info-title {
+    margin-top: 3px;
+    font-size: 2.6em;
+    font-weight: bold;
+}
+
+.info-panel .info-subtitle {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #600;
+}
+
+.info-panel .close-button {
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f1f1f1;
+    border-radius: 25px;
+    background: #000;
+    color: #fff;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.info-panel .close-button:hover {
+    background: #c00;
+}
+
+.info-panel .info-content {
+    display: flex;
+    flex-flow: wrap;
+    gap: 2vh;
+    justify-content: center;
+    margin: 10px;
+    align-content: flex-start;
+    overflow: auto;
+    border: 3px solid #666;
+    border-radius: 10px;
+    padding: 8px;
+    max-width: 40vw;
+}
+
+/* Miscellaneous */
+
+.info-popup {
+    position: absolute;
+    top: 0;
+    right: 30vw;
+    border: 3px auto black;
+    border-radius: 15px;
+    padding: 15px;
+    width: 100px;
+    min-height: 10px;
+    color: #fff;
+    background: #6666ff;
+    text-align: center;
+    font-weight: bold;
+}

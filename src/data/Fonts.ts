@@ -4,4 +4,4 @@ export const Fonts = {
   // SCORE: 'Odibee Sans',
 };
 
-export const FontArray = ['Roboto', 'Coda Caption'];
+export const FontArray = ['Roboto', 'Cedarville Cursive', 'Macondo'];

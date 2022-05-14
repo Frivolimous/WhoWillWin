@@ -1,3 +1,6 @@
+import { StringData } from '../data/StringData';
+import { animateDiv, AnimationType } from '../services/animateDiv';
+
 export class InfoPanel {
   private element: HTMLDivElement;
   private contentElement: HTMLDivElement;
@@ -10,19 +13,18 @@ export class InfoPanel {
     top.classList.add('top');
     this.element.appendChild(top);
     top.innerHTML = `
-    <div class="info-title">Instructions</div>
-    <div class="info-subtitle">How To Play</div>`;
+    <div class="info-title">${StringData.INFO_TITLE}</div>
+    <div class="info-subtitle">${StringData.INFO_SUBTITLE}</div>`;
     this.contentElement = document.createElement('div');
     this.contentElement.classList.add('info-content');
     top.appendChild(this.contentElement);
-    this.contentElement.innerHTML = 'Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum ';
+    this.contentElement.innerHTML = StringData.INFO_DESCRIPTION;
     let button = document.createElement('button');
     button.classList.add('close-button');
     this.element.appendChild(button);
     button.innerHTML = 'X';
     button.addEventListener('click', () => this.hidden = true);
-    this.hidden = true;
-
+    this.element.style.display = 'none';
   }
 
   public get hidden(): boolean {
@@ -31,8 +33,10 @@ export class InfoPanel {
 
   public set hidden(b: boolean) {
     if (b) {
-      this.element.style.display = 'none';
+      // this.element.style.display = 'none';
+      animateDiv(this.element, AnimationType.SHRINK_OUT);
     } else {
+      animateDiv(this.element, AnimationType.GROW_IN);
       this.element.style.removeProperty('display');
     }
   }
@@ -40,5 +44,4 @@ export class InfoPanel {
   public destroy = () => {
     document.body.removeChild(this.element);
   }
-
 }

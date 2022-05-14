@@ -1,51 +1,95 @@
 import { Facade } from '..';
 import { RoundData, SessionData } from '../Config';
-import { El } from '../services/ElementFactory';
+import { StringData } from '../data/StringData';
+import { JMTween } from '../JMGE/JMTween';
+import { animateDiv, AnimationType } from '../services/animateDiv';
+import { El, ElFactory } from '../services/ElementFactory';
 import { GameController } from '../services/GameController';
 import { MainUI } from './MainUI';
 import { RoundUI } from './RoundUI';
 import { BaseUI } from './_BaseUI';
 
 export class SetupUI extends BaseUI {
+  private title: HTMLElement;
+
+  private leftHeader: HTMLElement;
   private nameContainer: HTMLDivElement;
   private names: IInputElement[] = [];
   private addButton: HTMLButtonElement;
+
+  private rightHeader: HTMLElement;
+  private rightContent: HTMLElement;
+  private startGame: HTMLButtonElement;
 
   constructor() {
     super();
     this.element = El.makeDiv('setup-ui');
 
-    let title = El.makeText(`Game Setup`, 'title');
+    this.title = El.makeText(StringData.SETUP_TITLE, 'title');
     let middle = El.makeDiv('horizontal-stack');
     let leftSection = El.makeDiv('vertical-stack');
     let rightSection = El.makeDiv('vertical-stack');
     this.nameContainer = leftSection;
 
-    let leftHeader = El.makeText('Players:', 'sub-title');
-    let rightHeader = El.makeText('Options:', 'sub-title');
+    this.leftHeader = El.makeText(StringData.SETUP_PLAYER_TITLE, 'sub-title');
+    this.rightHeader = El.makeText(StringData.SETUP_OPTIONS_TITLE, 'sub-title');
+    this.rightContent = El.makeText(StringData.SETUP_OPTIONS_TEXT, 'setup-content');
 
-    this.addButton = El.makeButton('Add', 'info-button', () => this.addNameElement());
+    this.addButton = El.makeButton(StringData.BUTTON_ADD, 'info-button', () => this.addNameElement());
 
-    let home = El.makeButton('Home', 'home-button', this.navHome);
-    let startGame = El.makeButton('Start Game!', 'info-button', this.navGame);
-    El.addElements(leftSection, leftHeader, this.addButton);
-    El.addElements(rightSection, rightHeader, startGame);
+    this.startGame = El.makeButton(StringData.BUTTON_START, 'info-button', this.navGame);
+
+    Facade.showHome(true);
+
+    El.addElements(leftSection, this.leftHeader, this.addButton);
+    El.addElements(rightSection, this.rightHeader, this.rightContent, this.startGame);
 
     El.addElements(middle, leftSection, rightSection);
-    El.addElements(this.element, title, middle, home);
+    El.addElements(this.element, this.title, middle);
 
     leftSection.style.justifyContent = 'flex-start';
     leftSection.style.gap = '10px';
 
     this.loadNames();
+
+    // this.names.forEach(el => el.element.style.transition = "transform 2s");
+    // this.addButton.style.transition = 'all 2s';
   }
 
-  private navHome = () => {
-    Facade.navTo(new MainUI());
+  public navIn() {
+    animateDiv(this.title, AnimationType.GROW_IN);
+    animateDiv(this.leftHeader, AnimationType.SLIDE_IN);
+    let nameDelay = 100;
+    this.names.forEach(name => {
+      animateDiv(name.element, AnimationType.SLIDE_IN, nameDelay);
+      nameDelay += 100;
+    });
+    animateDiv(this.addButton, AnimationType.SLIDE_IN, nameDelay);
+
+    animateDiv(this.rightHeader, AnimationType.SLIDE_IN, 200);
+    animateDiv(this.rightContent, AnimationType.SLIDE_IN, 300);
+    animateDiv(this.startGame, AnimationType.SLIDE_IN, nameDelay + 100);
+    // animateDiv(this.element, AnimationType.GROW_IN);
+    window.addEventListener('keydown', this.onKeyDown);
+  }
+
+  public navOut() {
+    // animateDiv(this.element, AnimationType.SHRINK_OUT, 200);
+    // animateDiv(this.title, AnimationType.SHRINK_OUT);
+    // new JMTween({}, 1000).to({}).start().onComplete(() => {
+    //   this.element.parentElement.removeChild(this.element);
+    // });
+    El.destroy(this.element);
+    window.removeEventListener('keydown', this.onKeyDown);
   }
 
   private navGame = () => {
     this.updatePlayers();
+
+    if (SessionData.players.length <= 1) {
+      ElFactory.makeAlert('You must have 2 or more players.');
+      return;
+    }
 
     Facade.navTo(new RoundUI());
   }
@@ -58,6 +102,9 @@ export class SetupUI extends BaseUI {
   }
 
   private addNameElement = (name?: string) => {
+    let last = this.names[this.names.length - 1];
+    if (last && last.input.value === '') return;
+
     let el = this.makeNameElement();
     this.nameContainer.appendChild(el.element);
     this.nameContainer.appendChild(this.addButton);
@@ -92,6 +139,22 @@ export class SetupUI extends BaseUI {
 
   private updatePlayers = () => {
     GameController.resetSession(this.names.map(el => el.input.value));
+  }
+
+  private onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      let selected = document.getSelection().focusNode;
+      console.log(selected);
+      let index = this.names.findIndex(el => el.element === selected);
+      if (index >= 0 && index < this.names.length - 1) {
+        let next = this.names[index + 1];
+        next.input.focus();
+      } else {
+        let newEl = this.addNameElement();
+        if (newEl) newEl.input.focus();
+      }
+      console.log(index);
+    }
   }
 }
 

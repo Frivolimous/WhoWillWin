@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 export class JMEventListener<T = any> {
   public listeners: ((event: T) => void)[] = [];
   public once: ((event: T) => void)[] = [];
@@ -37,7 +35,7 @@ export class JMEventListener<T = any> {
   }
 
   public publishSync = (event?: T) => {
-    let listeners = _.clone(this.listeners);
+    let listeners = Object.assign({}, this.listeners);
     listeners.forEach(output => output(event));
     while (this.once.length > 0) {
       this.once.shift()(event);
@@ -61,7 +59,8 @@ export class JMEventListener<T = any> {
     while (this.events.length > 0) {
       let event = this.events.shift();
 
-      let listeners = _.clone(this.listeners);
+      // let listeners = _.clone(this.listeners);
+      let listeners = Object.assign({}, this.listeners);
       listeners.forEach(output => output(event));
 
       while (this.once.length > 0) {

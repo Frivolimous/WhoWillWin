@@ -7,6 +7,8 @@ export const SessionData = {
 
   characterDeck: [] as string[],
   powerDeck: [] as string[],
+
+  plays_each: 2,
 };
 
 export const RoundData = {

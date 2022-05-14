@@ -1,3 +1,4 @@
 export const ImageUrl = {
-  Header: '.\\img\\header.png',
+  ToJam: './img/ToJam.png',
+  GameHive: './img/GameHive.jpg',
 };

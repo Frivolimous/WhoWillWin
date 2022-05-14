@@ -1,7 +1,15 @@
 /* core stuff - shouldn't need to ever change */
+:root {
+    --ui-font: 'Cedarville Cursive';
+    --name-font: 'Cedarville Cursive';
+    --card-font: 'Roboto';
+    --button-font: 'Roboto';
+    --plain-font: 'Roboto';
+}
 
 body {
     margin: 0px;
+    overflow: hidden;
 }
 
 #main {
@@ -15,6 +23,8 @@ body {
     align-items: center;
     justify-content: space-around;
     height: 50vh;
+    width: 100vw;
+    position: absolute;
 }
 
 .main-ui .button-box {
@@ -22,12 +32,30 @@ body {
     flex-direction: column;
 }
 
+.bottom-bar {
+    display: flex;
+    position: absolute;
+    bottom: 0px;
+    align-items: center;
+    justify-content: space-around;
+    width: 100vw;
+    background: #ccc;
+    font-family: var(--ui-font);
+}
+
+.bottom-image {
+    height: 50px;
+}
+
 .title {
     font-size: 7em;
+    /* font-family: 'Roboto'; */
+    font-family: var(--ui-font);
 }
 
 .sub-title {
     font-size: 4em;
+    font-family: var(--ui-font);
 }
 
 .setup-ui {
@@ -37,9 +65,19 @@ body {
     justify-content: flex-start;
     height: 100vh;
     gap: 100px;
+    width: 100vw;
+    position: absolute;
+}
+
+.setup-content {
+    font-size: 2em;
+    font-family: var(--ui-font);
+    width: 600px;
 }
 
 .round-ui {
+    width: 100vw;
+    position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -55,6 +93,8 @@ body {
     justify-content: flex-start;
     height: 100vh;
     gap: 100px;
+    width: 100vw;
+    position: absolute;
 }
 
 .end-ui {
@@ -64,6 +104,8 @@ body {
     justify-content: flex-start;
     height: 100vh;
     gap: 100px;
+    width: 100vw;
+    position: absolute;
 }
 
 .score-ui .content {
@@ -78,6 +120,7 @@ table {
     width: 90%;
     border-collapse: collapse;
     font-size: 2em;
+    font-family: var(--ui-font);
 }
 
 th {
@@ -86,6 +129,7 @@ th {
 
 td {
     background-color: #fff;
+    padding-left: 10px;
 }
 
 .table-container {
@@ -93,6 +137,7 @@ td {
     background-color: #ccc;
     border-radius: 30px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -104,12 +149,45 @@ td {
     gap: 100px;
 }
 
+.round-bottom {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.round-title {
+    font-size: 4em;
+    font-family: var(--ui-font);
+}
+
+.round-text {
+    font-size: 2em;
+    font-family: var(--ui-font);
+}
+
+.round-vs {
+    font-size: 7em;
+    font-family: var(--name-font);
+}
+
+.vote-container {
+    margin-top: 50px;
+}
+
 .player-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    margin: 6px;
+    border-radius: 15px;
 }
+
+.player-section.highlighted {
+    border: 6px ridge #0ff;
+    border-radius: 15px;
+    margin: 0px;
+}
+
 .card-section {
     display: flex;
     gap: 5px;
@@ -145,13 +223,17 @@ td {
     border: 2px solid black;
     width: 200px;
     height: 50px;
+    font-family: var(--ui-font);
+    font-size: 2em;
 }
 
 .name-title {
     font-size: 3em;
+    font-family: var(--name-font);
 }
 
 .delete-button {
+    transition: background-color 0.3s;
     position: relative;
     width: 50px;
     height: 50px;
@@ -159,6 +241,7 @@ td {
     background: #000;
     cursor: pointer;
     font-size: 1.5em;
+    font-family: var(--button-font);
 }
 
 .card {
@@ -170,32 +253,58 @@ td {
     font-weight: bold;
     padding: 10px;
     padding-top: 25px;
+    user-select: none;
+    font-family: var(--card-font);
+}
+
+.card.card-back-character {
+    background-color: #99f;
+}
+
+.card.card-back-power {
+    background-color: #9f9;
+}
+
+.timer-container {
+    position: absolute;
+    top: 130px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 70px;
+    justify-content: center;
 }
 
 .timer {
-    position: absolute;
     border-radius: 100px;
     background: #000;
     width: 50px;
     height: 50px;
     color: #fff;
-    top: 130px;
     font-size: 30px;
     font-weight: bold;
     text-align: center;
     line-height: 50px;
     user-select: none;
+    font-family: var(--ui-font);
 }
 
 .big-text {
     font-size: 2em;
+    font-family: var(--ui-font);
+}
+
+.small-text {
+    font-family: var(--ui-font);  
 }
 
 .bigger-text {
     font-size: 4em;
+    font-family: var(--ui-font);
 }
 
 .vote-button {
+    transition: background-color 0.3s;
     position: relative;
     width: 200px;
     height: 50px;
@@ -205,14 +314,16 @@ td {
     cursor: pointer;
     font-size: 1.5em;
     margin: 5px;
+    font-family: var(--button-font);
 }
 
 .vote-button.highlighted {
-    border: 6px solid #0ff;
+    border: 6px ridge #0ff;
 }
 
 /* Sidebar and Sidebar Stuff */
 .info-button {
+    transition: background-color 0.3s;
     position: relative;
     width: 200px;
     height: 50px;
@@ -222,9 +333,11 @@ td {
     cursor: pointer;
     font-size: 1.5em;
     margin: 5px;
+    font-family: var(--button-font);
 }
 
 .small-button {
+    transition: background-color 0.3s;
     position: relative;
     width: 4em;
     height: 2em;
@@ -233,10 +346,11 @@ td {
     border-radius: 10px;
     cursor: pointer;
     font-size: 1em;
-    margin: 5px; 
+    font-family: var(--button-font);
 }
 
 .home-button {
+    transition: background-color 0.3s;
     position: absolute;
     width: 50px;
     height: 50px;
@@ -247,9 +361,12 @@ td {
     margin: 5px;
     left: 10px;
     top: 10px;
+    font-family: var(--button-font);
 }
 
-.info-button:hover {
+
+
+.info-button:hover, .home-button:hover, .small-button:hover, .delete-button:hover, .vote-button:hover {
     background: #009;
 }
 
@@ -281,6 +398,7 @@ td {
     margin: 5vh;
     right: 300px;
     justify-content: space-between;
+    font-family: var(--ui-font);
 }
 
 .info-panel .top {
@@ -315,6 +433,7 @@ td {
     font-size: 30px;
     font-weight: bold;
     cursor: pointer;
+    font-family: var(--plain-font);
 }
 
 .info-panel .close-button:hover {

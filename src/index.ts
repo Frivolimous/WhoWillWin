@@ -1,32 +1,26 @@
-import * as PIXI from 'pixi.js';
-import { JMRect } from './JMGE/others/JMRect';
 import { BaseUI } from './pages/_BaseUI';
-import { InfoPanel } from './components/domui/InfoPanel';
+import { InfoPanel } from './components/InfoPanel';
 import { RoundUI } from './pages/RoundUI';
 import { FontLoader } from './services/FontLoader';
 import { FontArray } from './data/Fonts';
-import { ScoreUI } from './pages/ScoreUI';
 import { EndUI } from './pages/EndUI';
 import { MainUI } from './pages/MainUI';
+import { ElFactory } from './services/ElementFactory';
+import { SetupUI } from './pages/SetupUI';
 
 export let interactionMode: 'desktop'|'mobile' = 'desktop';
 
 export let Facade = new class FacadeInner {
   private static exists = false;
-  public app: PIXI.Application;
-  public stageBorders: JMRect;
-  public innerBorders: JMRect;
-  public screen: PIXI.Container;
-  public border: PIXI.Graphics;
 
   public instructions: InfoPanel;
 
   private element: HTMLElement;
-
   private currentPage: BaseUI;
+  private bottomBar: HTMLElement;
+  private homeButton: HTMLElement;
 
   constructor() {
-    console.warn = (a: any) => {};
     if (FacadeInner.exists) throw new Error('Cannot instatiate more than one Facade Singleton.');
     FacadeInner.exists = true;
     try {
@@ -35,19 +29,24 @@ export let Facade = new class FacadeInner {
     } catch (e) {
 
     }
-
-    // Setup PIXI
     this.element = document.getElementById('main');
 
-    this.navTo(new MainUI());
-
     this.instructions = new InfoPanel();
-    // FontLoader.load(FontArray).then(() => console.log('Fonts Loaded'));
-    // let fonts: string[] = _.map(Fonts);
+    this.bottomBar = ElFactory.makeBottomBar();
+    let body = document.body;
+    body.appendChild(this.bottomBar);
+    this.homeButton = ElFactory.makeHomeButton();
+    body.appendChild(this.homeButton);
 
-    // // load fonts then preloader!
-    // // window.requestAnimationFrame(() => FontLoader.load(fonts).then(this.init));
-    // window.requestAnimationFrame(() => this.init());
+    FontLoader.load(FontArray);
+    window.requestAnimationFrame(() => this.init());
+  }
+
+  public init() {
+    // this.navTo(new MainUI());
+    // this.navTo(new SetupUI());
+    this.navTo(new RoundUI());
+    // this.navTo(new EndUI());
   }
 
   public navTo(nextPage: BaseUI) {
@@ -55,7 +54,7 @@ export let Facade = new class FacadeInner {
       this.currentPage.navOut();
     }
 
-    this.element.innerHTML = '';
+    // this.element.innerHTML = '';
     this.currentPage = nextPage;
     this.element.appendChild(nextPage.element);
     nextPage.navIn();
@@ -63,5 +62,13 @@ export let Facade = new class FacadeInner {
 
   public showInstructions() {
     this.instructions.hidden = false;
+  }
+
+  public showHome(b: boolean) {
+    if (b) {
+      this.homeButton.style.removeProperty('display');
+    } else {
+      this.homeButton.style.display = 'none';
+    }
   }
 }();

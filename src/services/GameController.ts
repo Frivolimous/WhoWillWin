@@ -1,5 +1,6 @@
 import { RoundData, SessionData } from '../Config';
 import { Cards } from '../data/Cards';
+import { StringData } from '../data/StringData';
 
 export const GameController = {
   selectPlayer: () => {
@@ -15,13 +16,14 @@ export const GameController = {
     return player.slug;
   },
 
-  scorePlayer: (name: string) => {
+  scorePlayer: (name: string, amount: number = 1) => {
     let player = SessionData.players.find(el => el.slug === name);
-    player.score++;
+    player.score += amount;
   },
 
   resetSession: (players: string[]) => {
     SessionData.players = players.filter(el => el !== '').map(slug => ({slug, score: 0, plays: 0}));
+    SessionData.plays_each = GameController.calculatePlays(SessionData.players.length);
     console.log(SessionData.players);
 
     RoundData.round = 0;
@@ -61,15 +63,22 @@ export const GameController = {
   },
 
   isGameOver: () => {
-    return !SessionData.players.some(el => el.plays < 2);
+    return !SessionData.players.some(el => el.plays < SessionData.plays_each);
+  },
+
+  numRounds: () => {
+    return SessionData.players.length * SessionData.plays_each / 2;
+  },
+
+  calculatePlays: (numPlayers: number) => {
+    if (numPlayers === 2) {
+      return 3;
+    } else if (numPlayers > 5 && numPlayers % 2 === 0) {
+      return 1;
+    } else {
+      return 2;
+    }
   },
 };
 
-GameController.resetSession([
-    'Debbie',
-    'Jeremy',
-    'Rambo',
-    'Josh',
-    'Pascal',
-    'Bob',
-  ]);
+GameController.resetSession(StringData.DEFAULT_NAMES);

@@ -2,6 +2,8 @@ import { RoundData, SessionData } from '../Config';
 import { StringData } from '../data/StringData';
 
 export const GameController = {
+  GHMode: false,
+
   selectPlayer: () => {
     let minPlay = Math.min(...SessionData.players.map(el => el.plays));
     let pool = SessionData.players.filter(el => el.plays === minPlay && !RoundData.players.includes(el.slug));
@@ -9,8 +11,6 @@ export const GameController = {
     let index = Math.floor(Math.random() * pool.length);
     let player = pool[index];
     player.plays++;
-    console.log(SessionData);
-    console.log(pool, index, player);
 
     return player.slug;
   },
@@ -23,7 +23,6 @@ export const GameController = {
   resetSession: (players: string[]) => {
     SessionData.players = players.filter(el => el !== '').map(slug => ({slug, score: 0, plays: 0}));
     SessionData.plays_each = GameController.calculatePlays(SessionData.players.length);
-    console.log(SessionData.players);
 
     RoundData.round = 0;
     RoundData.players = [];
@@ -34,7 +33,9 @@ export const GameController = {
   selectCharacter: () => {
     if (SessionData.characterDeck.length === 0) {
       for (let i = 0; i < StringData.CHARACTERS.length; i++) {
-        SessionData.characterDeck.push(i);
+        if (GameController.GHMode || !GameController.testGHCharacter(i)) {
+          SessionData.characterDeck.push(i);
+        }
       }
       // Cards.Characters.forEach(card => SessionData.characterDeck.push(card));
     }
@@ -47,7 +48,9 @@ export const GameController = {
   selectPower: () => {
     if (SessionData.powerDeck.length === 0) {
       for (let i = 0; i < StringData.POWERS.length; i++) {
-        SessionData.powerDeck.push(i);
+        if (GameController.GHMode || !GameController.testGHPower(i)) {
+          SessionData.powerDeck.push(i);
+        }
       }
       // Cards.Powers.forEach(card => SessionData.powerDeck.push(card));
     }
@@ -83,6 +86,16 @@ export const GameController = {
     } else {
       return 2;
     }
+  },
+
+  testGHCharacter: (index: number) => {
+    let char = StringData.CHARACTERS[index];
+    return (StringData.GHCHARACTERS.includes(char));
+  },
+
+  testGHPower: (index: number) => {
+    let char = StringData.POWERS[index];
+    return (StringData.GHPOWERS.includes(char));
   },
 };
 

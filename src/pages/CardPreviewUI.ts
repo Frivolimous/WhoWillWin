@@ -1,10 +1,8 @@
 import { Facade } from '..';
 import { ImageUrl } from '../data/ImageUrl';
 import { StringData } from '../data/StringData';
-import { JMTween } from '../JMGE/JMTween';
-import { animateDiv, AnimationType } from '../services/animateDiv';
-import { El, ElFactory } from '../services/ElementFactory';
-import { SetupUI } from './SetupUI';
+import { El } from '../services/ElementFactory';
+import { GameController } from '../services/GameController';
 import { BaseUI } from './_BaseUI';
 
 /* css used:
@@ -15,10 +13,6 @@ import { BaseUI } from './_BaseUI';
 */
 
 export class CardPreviewUI extends BaseUI {
-  // private title: HTMLElement;
-  // private content: HTMLElement;
-  // private button1: HTMLElement;
-  // private button2: HTMLElement;
 
   constructor() {
     super();
@@ -30,11 +24,15 @@ export class CardPreviewUI extends BaseUI {
     El.addElements(this.element, characters, characterSection, powers, powerSection);
 
     for (let i = 0; i < StringData.CHARACTERS.length; i++) {
-      characterSection.appendChild(this.makeCharacter(i));
+      if (GameController.GHMode || !GameController.testGHCharacter(i)) {
+        characterSection.appendChild(this.makeCharacter(i));
+      }
     }
 
     for (let i = 0; i < StringData.POWERS.length; i++) {
-      powerSection.appendChild(this.makePower(i));
+      if (GameController.GHMode || !GameController.testGHPower(i)) {
+        powerSection.appendChild(this.makePower(i));
+      }
     }
 
     Facade.showHome(true);

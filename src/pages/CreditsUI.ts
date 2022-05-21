@@ -1,10 +1,8 @@
 import { Facade } from '..';
 import { ImageUrl } from '../data/ImageUrl';
 import { StringData } from '../data/StringData';
-import { JMTween } from '../JMGE/JMTween';
 import { animateDiv, AnimationType } from '../services/animateDiv';
-import { El, ElFactory } from '../services/ElementFactory';
-import { CardPreviewUI } from './CardPreviewUI';
+import { El } from '../services/ElementFactory';
 import { SetupUI } from './SetupUI';
 import { BaseUI } from './_BaseUI';
 
@@ -57,7 +55,6 @@ export class CreditsUI extends BaseUI {
     ghLogo.style.marginLeft = '0.3em';
     ghLogo.style.transform = 'translateY(0.3em)';
     this.button1 = El.makeButton(StringData.BUTTON_BACK, 'info-button', this.navigateBack);
-    // this.button2 = El.makeButton(StringData.BUTTON_INSTRUCTIONS, 'info-button', this.openInstructions);
 
     Facade.showHome(false);
     Facade.showBottom(false);
@@ -86,13 +83,7 @@ export class CreditsUI extends BaseUI {
   }
 
   public navOut() {
-    // animateDiv(this.title, AnimationType.BACK_OUT, 100);
-    // animateDiv(this.button1, AnimationType.BACK_OUT, 200);
-    // animateDiv(this.button2, AnimationType.BACK_OUT, 200);
-    // animateDiv(this.element, AnimationType.SLIDE_OUT);
-    // new JMTween({}, 1000).to({}).start().onComplete(() => {
-      this.element.parentElement.removeChild(this.element);
-    // });
+    this.element.parentElement.removeChild(this.element);
   }
 
   private navigateBack = () => {

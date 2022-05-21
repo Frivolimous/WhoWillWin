@@ -1,9 +1,9 @@
 import { Facade } from '..';
 import { ImageUrl } from '../data/ImageUrl';
 import { StringData } from '../data/StringData';
-import { JMTween } from '../JMGE/JMTween';
 import { animateDiv, AnimationType } from '../services/animateDiv';
 import { El, ElFactory } from '../services/ElementFactory';
+import { GameController } from '../services/GameController';
 import { CardPreviewUI } from './CardPreviewUI';
 import { SetupUI } from './SetupUI';
 import { BaseUI } from './_BaseUI';
@@ -19,6 +19,8 @@ export class MainUI extends BaseUI {
   private title: HTMLElement;
   private content: HTMLElement;
   private button1: HTMLElement;
+  private gamehive: HTMLElement;
+  private GTimerOn = false;
   // private button2: HTMLElement;
 
   constructor() {
@@ -27,22 +29,18 @@ export class MainUI extends BaseUI {
 
     this.title = El.makeImg(ImageUrl.Logo, 'main-logo');
     this.content = El.makeText(StringData.MAIN_CONTENT, 'bigger-text');
-    // this.title = El.makeText(StringData.GAME_TITLE, 'title');
 
-    // let buttonContainer = El.makeDiv('button-box');
+    this.gamehive = El.makeText(StringData.GAMEHIVE_EDITION, 'big-text');
 
     this.button1 = El.makeButton(StringData.BUTTON_NEW_GAME, 'giant-button', this.navigateStart);
-    let preview = El.makeButton('See Cards', 'info-button', this.navigatePreview);
-    // this.button2 = El.makeButton(StringData.BUTTON_INSTRUCTIONS, 'info-button', this.openInstructions);
 
     Facade.showHome(false);
     Facade.showBottom(false);
     Facade.showCredits(true);
     Facade.controlBar.hidden = true;
 
-    // El.addElements(buttonContainer, this.button1);
-    El.addElements(this.element, this.title, this.content, this.button1);
-    El.addElements(preview);
+    El.addElements(this.element, this.title, this.gamehive, this.content, this.button1);
+    this.gamehive.style.display = 'none';
   }
 
   public navIn() {
@@ -50,7 +48,6 @@ export class MainUI extends BaseUI {
     animateDiv(this.content, AnimationType.BASIC_POP, 600);
     animateDiv(this.button1, AnimationType.BASIC_POP, 900);
     Facade.popCredits(1200);
-    // animateDiv(this.button2, AnimationType.BASIC_POP, 900);
     window.addEventListener('keydown', this.onKeyDown);
   }
 
@@ -76,6 +73,17 @@ export class MainUI extends BaseUI {
   private onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'c') {
       this.navigatePreview();
+    } else if (e.key === 'g') {
+      this.GTimerOn = true;
+      window.setTimeout(() => this.GTimerOn = false, 1000);
+    } else if (e.key === 'h') {
+      this.enableGHMode();
     }
+  }
+
+  private enableGHMode() {
+    GameController.GHMode = true;
+    this.gamehive.style.removeProperty('display');
+    animateDiv(this.gamehive, AnimationType.SPIN);
   }
 }

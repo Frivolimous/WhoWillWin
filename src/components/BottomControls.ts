@@ -66,6 +66,12 @@ export class BottomControls {
     this.voteRight.innerHTML = `${player1} ${StringData.ROUND_WINS} >>`;
   }
 
+  public pulseVotes() {
+    animateDiv(this.voteLeft, AnimationType.PULSE, 0);
+    animateDiv(this.voteTie, AnimationType.PULSE, 200);
+    animateDiv(this.voteRight, AnimationType.PULSE, 400);
+  }
+
   public showButton(button: 'skip' | 'pause' | 'vote', value: boolean = true) {
     if (button === 'skip') {
       this.toggleVisible(this.skip, value);

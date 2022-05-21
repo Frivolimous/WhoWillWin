@@ -118,7 +118,7 @@ body {
 }
 
 .setup-logo {
-    height: min(50vh, 75vw);
+    width: min(120vh, 60vw);
 }
 
 .setup-nav-container {

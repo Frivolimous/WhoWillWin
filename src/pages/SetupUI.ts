@@ -3,7 +3,7 @@ import { RoundData, SessionData } from '../Config';
 import { ImageUrl } from '../data/ImageUrl';
 import { StringData } from '../data/StringData';
 import { JMTween } from '../JMGE/JMTween';
-import { animateDiv, AnimationType } from '../services/animateDiv';
+import { animateDiv, AnimationType, loopAnimation } from '../services/animateDiv';
 import { El, ElFactory } from '../services/ElementFactory';
 import { GameController } from '../services/GameController';
 import { MainUI } from './MainUI';
@@ -41,7 +41,7 @@ export class SetupUI extends BaseUI {
 
   private cPage: number = 0;
   private cTimeout: number;
-  private pulsing = true;
+  private endPulseAnimation: () => void;
 
   constructor() {
     super();
@@ -114,7 +114,7 @@ export class SetupUI extends BaseUI {
     // animateDiv(this.startGame, AnimationType.SLIDE_IN, nameDelay + 100);
     // animateDiv(this.element, AnimationType.GROW_IN);
     window.addEventListener('keydown', this.onKeyDown);
-    this.endlessPulse();
+    this.endPulseAnimation = loopAnimation(this.startGame, AnimationType.SMOOTH_PULSE, 0);
   }
 
   public navOut() {
@@ -126,12 +126,7 @@ export class SetupUI extends BaseUI {
     El.destroy(this.element);
     window.removeEventListener('keydown', this.onKeyDown);
     window.clearTimeout(this.cTimeout);
-    this.pulsing = false;
-  }
-
-  private endlessPulse = () => {
-    if (!this.pulsing) return;
-    animateDiv(this.startGame, AnimationType.SMOOTH_PULSE, 0, this.endlessPulse);
+    this.endPulseAnimation();
   }
 
   private nextPage = () => {
@@ -226,7 +221,6 @@ export class SetupUI extends BaseUI {
   private onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       let selected = document.getSelection().focusNode;
-      console.log(selected);
       let index = this.names.findIndex(el => el.element === selected);
       if (index >= 0 && index < this.names.length - 1) {
         let next = this.names[index + 1];
@@ -235,7 +229,6 @@ export class SetupUI extends BaseUI {
         let newEl = this.addNameElement();
         if (newEl) newEl.input.focus();
       }
-      console.log(index);
     }
   }
 }

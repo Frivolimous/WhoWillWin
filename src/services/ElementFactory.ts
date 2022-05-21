@@ -112,10 +112,10 @@ export const ElFactory = {
     return tableInner;
   },
 
-  makePlayerSection: (name: string) => {
+  makePlayerSection: (name: string, namePrepend?: string) => {
     let section = El.makeDiv('player-section');
     let cardSection = El.makeDiv('card-section');
-    let nameTitle = El.makeText(name, 'name-title');
+    let nameTitle = El.makeText((SessionData.prepends && namePrepend || '') + name, 'name-title');
     let card1El = El.makeDiv('card');
     let card2El = El.makeDiv('card');
     // card1El.innerHTML = card1;

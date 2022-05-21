@@ -19,6 +19,20 @@ export enum AnimationType {
   FLIP_B,
 }
 
+export function loopAnimation(element: HTMLElement, index: AnimationType, delay: number) {
+  let animating = true;
+
+  let animate = () => {
+    if (!animating) return;
+
+    animateDiv(element, index, delay, animate);
+  };
+
+  animate();
+
+  return () => animating = false;
+}
+
 export function animateDiv(element: HTMLElement, index: AnimationType, delay: number = 0, onComplete?: () => void) {
   let obj: ITransformData = {height: 1, width: 1, rotation: 0, x: 0, y: 0};
   switch (index) {
@@ -138,7 +152,7 @@ export function animateDiv(element: HTMLElement, index: AnimationType, delay: nu
 //   new JMTween(element, time).to(data)
 // }
 
-function applyTransform(element: HTMLElement, data: ITransformData) {
+export function applyTransform(element: HTMLElement, data: ITransformData) {
   element.style.transform = `scaleX(${data.width}) scaleY(${data.height}) translateX(${data.x}px) translateY(${data.y}px) rotate(${data.rotation}deg)`;
 }
 

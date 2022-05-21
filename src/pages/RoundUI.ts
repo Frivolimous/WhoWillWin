@@ -5,7 +5,7 @@ import { RoundData, SessionData } from '../Config';
 import { ImageUrl } from '../data/ImageUrl';
 import { StringData } from '../data/StringData';
 import { JMTween } from '../JMGE/JMTween';
-import { animateDiv, AnimationType } from '../services/animateDiv';
+import { animateDiv, AnimationType, loopAnimation } from '../services/animateDiv';
 import { El, ElFactory } from '../services/ElementFactory';
 import { GameController } from '../services/GameController';
 import { EndUI } from './EndUI';
@@ -37,7 +37,6 @@ export class RoundUI extends BaseUI {
   private bottomContent: HTMLDivElement;
   private vs: HTMLDivElement;
 
-  private leaderboard: HTMLElement;
   private roundCount: HTMLDivElement;
 
   private canVote: boolean = false;
@@ -45,6 +44,8 @@ export class RoundUI extends BaseUI {
 
   private overlayWinner: HTMLImageElement;
   private overlayLoser: HTMLImageElement;
+
+  private winAnimateEnd: () => void;
 
   constructor() {
     super();
@@ -66,8 +67,8 @@ export class RoundUI extends BaseUI {
     this.bottomTitle.style.zIndex = '1';
     this.bottomContent = El.makeText('', 'medium-text');
     this.bottomContent.style.zIndex = '1';
-    [this.leftSection, this.names[0], this.cards[0][0], this.cards[0][1]] = ElFactory.makePlayerSection(RoundData.players[0]);
-    [this.rightSection, this.names[1], this.cards[1][0], this.cards[1][1]] = ElFactory.makePlayerSection(RoundData.players[1]);
+    [this.leftSection, this.names[0], this.cards[0][0], this.cards[0][1]] = ElFactory.makePlayerSection(RoundData.players[0], StringData.ROUND_PLAYER_1);
+    [this.rightSection, this.names[1], this.cards[1][0], this.cards[1][1]] = ElFactory.makePlayerSection(RoundData.players[1], StringData.ROUND_PLAYER_2);
     this.vs = El.makeText(StringData.ROUND_VS, 'vs-text');
     this.timer = new TimerCircle();
     this.leftAvatar = new Avatar();
@@ -112,16 +113,6 @@ export class RoundUI extends BaseUI {
   //   });
   }
 
-  private setCardFront(el: HTMLDivElement, slug: number, reverse = false, power = false) {
-    if (power) {
-      el.classList.remove('card-back-power');
-      el.innerHTML = `<img src = ${ImageUrl.Powers[slug]} class = "card-image${reverse ? ' card-image-reverse' : ''}"><div class= "card-text">${StringData.POWERS[slug]}</div>`;
-    } else {
-      el.classList.remove('card-back-character');
-      el.innerHTML = `<img src = ${ImageUrl.Characters[slug]} class = "card-image${reverse ? ' card-image-reverse' : ''}"><div class= "card-text">${StringData.CHARACTERS[slug]}</div>`;
-    }
-  }
-
   private phaseIntro = () => {
     new JMTween({}, 300).to({}).start().onComplete(() => {
       El.addElements(this.topSection, this.leftSection, this.vs, this.rightSection);
@@ -160,7 +151,7 @@ export class RoundUI extends BaseUI {
       });
     });
 
-    this.timer.reset(10).blinkAt(3).onComplete(this.phaseLeftPlay).start();
+    this.timer.reset(SessionData.timing.intro).blinkAt(SessionData.blinkTiming.intro).onComplete(this.phaseLeftPlay).start();
     Facade.controlBar.onTimerRefreshed();
     this.timer.canSkip = false;
   }
@@ -168,7 +159,7 @@ export class RoundUI extends BaseUI {
   private phaseLeftPlay = () => {
     this.bottomTitle.innerHTML = `${RoundData.players[0]}, ${StringData.ROUND_PLAY_TITLE}`;
     this.leftSection.classList.add('left-highlight');
-    this.timer.reset(20).blinkAt(3).onComplete(this.phaseRightPlay).start();
+    this.timer.reset(SessionData.timing.player_left).blinkAt(SessionData.blinkTiming.player_left).onComplete(this.phaseRightPlay).start();
     Facade.controlBar.onTimerRefreshed();
     this.timer.canSkip = true;
     this.timer.element.classList.add('timer-left');
@@ -186,7 +177,7 @@ export class RoundUI extends BaseUI {
     this.bottomTitle.innerHTML = `${RoundData.players[1]}, ${StringData.ROUND_PLAY_TITLE}`;
     this.leftSection.classList.remove('left-highlight');
     this.rightSection.classList.add('right-highlight');
-    this.timer.reset(20).blinkAt(3).onComplete(this.phaseVote).start();
+    this.timer.reset(SessionData.timing.player_right).blinkAt(SessionData.blinkTiming.player_right).onComplete(this.phaseOpen).start();
     Facade.controlBar.onTimerRefreshed();
     this.timer.element.classList.remove('timer-left');
     this.timer.element.classList.add('timer-right');
@@ -199,13 +190,37 @@ export class RoundUI extends BaseUI {
     animateDiv(this.cards[1][1], AnimationType.PULSE);
   }
 
+  private phaseOpen = () => {
+    if (!SessionData.open_phase) {
+      this.phaseVote();
+      return;
+    }
+
+    this.bottomTitle.innerHTML = StringData.ROUND_OPEN_TITLE;
+    this.bottomContent.innerHTML = StringData.ROUND_OPEN_TEXT;
+    this.leftSection.classList.add('left-highlight');
+    this.timer.reset(SessionData.timing.open).blinkAt(SessionData.blinkTiming.open).onComplete(this.phaseVote).start();
+    Facade.controlBar.onTimerRefreshed();
+    this.timer.element.classList.remove('timer-right');
+    this.element.appendChild(this.timer.element);
+    this.rightAvatar.setState('active');
+    this.leftAvatar.setState('active');
+
+    animateDiv(this.bottomTitle, AnimationType.BASIC_POP);
+    animateDiv(this.bottomContent, AnimationType.BASIC_POP, 100);
+    this.audience.style.removeProperty('display');
+    animateDiv(this.audience, AnimationType.SLIDE_IN);
+
+  }
+
   private phaseVote = () => {
     this.canVote = true;
     this.bottomTitle.innerHTML = StringData.ROUND_VOTE_TITLE;
     this.bottomContent.innerHTML = StringData.ROUND_VOTE_TEXT;
+    this.leftSection.classList.remove('left-highlight');
     this.rightSection.classList.remove('right-highlight');
     Facade.controlBar.showButton('vote', true);
-    this.timer.reset(30).blinkAt(5).onComplete(this.phaseVote2).start();
+    this.timer.reset(SessionData.timing.vote).blinkAt(SessionData.blinkTiming.vote).onComplete(this.phaseVote2).start();
     Facade.controlBar.onTimerRefreshed();
     this.timer.element.classList.remove('timer-right');
     this.element.appendChild(this.timer.element);
@@ -217,14 +232,24 @@ export class RoundUI extends BaseUI {
 
     animateDiv(this.bottomTitle, AnimationType.BASIC_POP);
     animateDiv(this.bottomContent, AnimationType.BASIC_POP, 100);
-    animateDiv(this.audience, AnimationType.SLIDE_IN);
+    if (!SessionData.open_phase) {
+      animateDiv(this.audience, AnimationType.SLIDE_IN);
+    }
   }
 
   private phaseVote2 = () => {
     this.bottomTitle.innerHTML = StringData.ROUND_VOTE_TITLE2;
     this.bottomContent.innerHTML = StringData.ROUND_VOTE_TEXT2;
-    this.timer.reset(10).blinkAt(10).onComplete(this.phaseLeaderboard).start();
+    this.timer.reset(SessionData.timing.vote2).blinkAt(SessionData.blinkTiming.vote2).onComplete(this.phaseLeaderboard).start();
     Facade.controlBar.onTimerRefreshed();
+    this.loopPulseVote();
+  }
+
+  private loopPulseVote = () => {
+    if (!this.canVote) return;
+    if (this.winner || this.winner === 0) return;
+    Facade.controlBar.pulseVotes();
+    window.setTimeout(this.loopPulseVote, 1000);
   }
 
   private phaseLeaderboard = () => {
@@ -233,7 +258,7 @@ export class RoundUI extends BaseUI {
     if (!this.winner && this.winner !== 0) this.winner = -1;
     RoundData.winner = this.winner;
 
-    this.timer.reset(10).blinkAt(3).onComplete(this.navGame).start();
+    this.timer.reset(SessionData.timing.leaderboard).blinkAt(SessionData.blinkTiming.leaderboard).onComplete(this.navGame).start();
     Facade.controlBar.onTimerRefreshed();
 
     if (this.winner === 0) {
@@ -243,6 +268,7 @@ export class RoundUI extends BaseUI {
       this.bottomTitle.innerHTML = `${RoundData.players[0]} Wins!`;
       this.bottomContent.innerHTML = StringData.ROUND_WINS_TEXT;
       this.leftSection.appendChild(this.overlayWinner);
+      // this.winAnimateEnd = loopAnimation(this.overlayWinner, AnimationType.SMOOTH_PULSE, 0);
       // this.rightSection.appendChild(this.overlayLoser);
     } else if (this.winner === 1) {
       GameController.scorePlayer(RoundData.players[RoundData.winner]);
@@ -250,6 +276,7 @@ export class RoundUI extends BaseUI {
       this.rightAvatar.setState('win');
       this.bottomTitle.innerHTML = `${RoundData.players[1]} Wins!`;
       this.rightSection.appendChild(this.overlayWinner);
+      // this.winAnimateEnd = loopAnimation(this.overlayWinner, AnimationType.SMOOTH_PULSE, 0);
       // this.leftSection.appendChild(this.overlayLoser);
     } else {
       this.rightAvatar.setState('passive');
@@ -273,10 +300,22 @@ export class RoundUI extends BaseUI {
   }
 
   private navGame = () => {
+    this.winAnimateEnd && this.winAnimateEnd();
+
     if (GameController.isGameOver()) {
       Facade.navTo(new EndUI());
     } else {
       Facade.navTo(new RoundUI());
+    }
+  }
+
+  private setCardFront(el: HTMLDivElement, slug: number, reverse = false, power = false) {
+    if (power) {
+      el.classList.remove('card-back-power');
+      el.innerHTML = `<img src = ${ImageUrl.Powers[slug]} class = "card-image${reverse ? ' card-image-reverse' : ''}"><div class= "card-text">${StringData.POWERS[slug]}</div>`;
+    } else {
+      el.classList.remove('card-back-character');
+      el.innerHTML = `<img src = ${ImageUrl.Characters[slug]} class = "card-image${reverse ? ' card-image-reverse' : ''}"><div class= "card-text">${StringData.CHARACTERS[slug]}</div>`;
     }
   }
 }

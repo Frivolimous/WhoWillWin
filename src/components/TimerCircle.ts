@@ -99,7 +99,6 @@ export class TimerCircle {
   }
 
   public skipTimer = () => {
-    console.log('a');
     if (this._canSkip) {
       this.endNow();
     }

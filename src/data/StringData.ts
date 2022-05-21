@@ -1,6 +1,7 @@
 export const EnglishStringData = {
   GAME_TITLE: 'Squabble Squabble!',
   MAIN_CONTENT: 'A social game for virtual happy hours!',
+  GAMEHIVE_EDITION: 'Gamehive Edition!',
   // MAIN_CONTENT: 'A social game played through video conferencing software',
   SETUP_TITLE: 'Game Setup',
   SETUP_PLAYER_TITLE: 'Players',
@@ -33,8 +34,12 @@ export const EnglishStringData = {
   ROUND_WINS: 'Wins',
   ROUND_WINS_TEXT: 'Great job!',
   ROUND_TIE: 'Tie',
+  ROUND_PLAYER_1: '1️⃣',
+  ROUND_PLAYER_2: '2️⃣',
   ROUND_LEFT_TEXT: ``,
   ROUND_RIGHT_TEXT: ``,
+  ROUND_OPEN_TITLE: 'Open Floor!',
+  ROUND_OPEN_TEXT: 'What does everyone think?',
   ROUND_VOTE_TITLE: 'Who Will Win?',
   ROUND_VOTE_TEXT: 'Everyone, cast your vote!',
   ROUND_VOTE_TITLE2: 'Host: Lock in the winner!',
@@ -68,8 +73,8 @@ export const EnglishStringData = {
   ],
 
   DEFAULT_NAMES: [
-    'Player 1',
-    'Player 2',
+    'Mad Dog',
+    'Pretty Kitty',
   ],
 
   CHARACTERS: [
@@ -100,7 +105,11 @@ export const EnglishStringData = {
     'Cockroach',
     'Boss Joe',
     'Sword Master',
+  ],
 
+  GHCHARACTERS: [
+    'Boss Joe',
+    'Sword Master',
   ],
 
   POWERS: [
@@ -113,27 +122,32 @@ export const EnglishStringData = {
     'Master Sword',
     'Teleportation',
     'Shrinking Power',
-    'Super Sized',
+    'Giantness',
     'Time Control',
     'Invisibility',
     'Unlimited Wealth',
     'Summoning',
     'Cloning',
     'Healing Powers',
-    'Irresistibly Cute',
+    'Super Cuteness',
     'Bazooka',
     'Super Strength',
     'Buzzsaw',
-    'Magic Stone',
+    'Crafting Shards',
     'Dragon Balls',
     'Poop',
     'Pokeball',
     'Good Luck',
-    'Critical Roll',
+    'Critical Hit!',
     'Bacon Grease',
     'Fairy Magic',
     'Groovy Beats',
     'Power Up',
+  ],
+
+  GHPOWERS: [
+    'Power Up',
+    'Crafting Shards',
   ],
 };
 

@@ -18,6 +18,26 @@ const SessionData = {
     cardChoice: 'Random',
     gameStructure: 'Round Robin',
     gameLength: 'Play Twice',
+    timing: {
+        intro: 10,
+        player_left: 20,
+        player_right: 20,
+        open: 30,
+        vote: 30,
+        vote2: 10,
+        leaderboard: 10,
+    },
+    blinkTiming: {
+        intro: 3,
+        player_left: 3,
+        player_right: 3,
+        open: 3,
+        vote: 5,
+        vote2: 10,
+        leaderboard: 3,
+    },
+    open_phase: true,
+    prepends: false,
     characterDeck: [],
     powerDeck: [],
     plays_each: 2,
@@ -555,7 +575,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _Config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Config */ "./src/Config.ts");
 /* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
-/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
+/* harmony import */ var _services_animateDiv__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/animateDiv */ "./src/services/animateDiv.ts");
+/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
+
 
 
 
@@ -624,17 +646,17 @@ class BottomControls {
                 this.onVote(-1);
             }
         };
-        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeDiv('bottom-bar');
+        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('bottom-bar');
         this.element.style.position = 'absolute';
         this.element.style.bottom = '0';
-        this.skip = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_SKIP, 'info-button', this.onSkip);
-        this.pause = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_PAUSE, 'info-button', this.onPause);
-        this.voteLeft = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(`<< ${_Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.players[0]} ${_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_WINS}`, 'wide-button', () => this.onVote(0));
-        this.voteRight = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(`${_Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.players[1]} ${_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_WINS} >>`, 'wide-button', () => this.onVote(1));
-        this.voteTie = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_TIE, 'info-button', () => this.onVote(-1));
-        let voteContainer = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeDiv('bottom-vote-container');
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.addElements(this.element, this.pause, voteContainer, this.skip);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.addElements(voteContainer, this.voteLeft, this.voteTie, this.voteRight);
+        this.skip = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_SKIP, 'info-button', this.onSkip);
+        this.pause = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_PAUSE, 'info-button', this.onPause);
+        this.voteLeft = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeButton(`<< ${_Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.players[0]} ${_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_WINS}`, 'wide-button', () => this.onVote(0));
+        this.voteRight = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeButton(`${_Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.players[1]} ${_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_WINS} >>`, 'wide-button', () => this.onVote(1));
+        this.voteTie = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_TIE, 'info-button', () => this.onVote(-1));
+        let voteContainer = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('bottom-vote-container');
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(this.element, this.pause, voteContainer, this.skip);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(voteContainer, this.voteLeft, this.voteTie, this.voteRight);
         document.body.appendChild(this.element);
         this.element.style.display = 'none';
         document.addEventListener('keydown', this.onKeyDown);
@@ -661,6 +683,11 @@ class BottomControls {
     setNames(player0, player1) {
         this.voteLeft.innerHTML = `<< ${player0} ${_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_WINS}`;
         this.voteRight.innerHTML = `${player1} ${_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_WINS} >>`;
+    }
+    pulseVotes() {
+        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_2__.animateDiv)(this.voteLeft, _services_animateDiv__WEBPACK_IMPORTED_MODULE_2__.AnimationType.PULSE, 0);
+        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_2__.animateDiv)(this.voteTie, _services_animateDiv__WEBPACK_IMPORTED_MODULE_2__.AnimationType.PULSE, 200);
+        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_2__.animateDiv)(this.voteRight, _services_animateDiv__WEBPACK_IMPORTED_MODULE_2__.AnimationType.PULSE, 400);
     }
     showButton(button, value = true) {
         if (button === 'skip') {
@@ -713,7 +740,6 @@ class TimerCircle {
         this.paused = true;
         this._blinkAt = 3;
         this.skipTimer = () => {
-            console.log('a');
             if (this._canSkip) {
                 this.endNow();
             }
@@ -972,6 +998,7 @@ __webpack_require__.r(__webpack_exports__);
 const EnglishStringData = {
     GAME_TITLE: 'Squabble Squabble!',
     MAIN_CONTENT: 'A social game for virtual happy hours!',
+    GAMEHIVE_EDITION: 'Gamehive Edition!',
     // MAIN_CONTENT: 'A social game played through video conferencing software',
     SETUP_TITLE: 'Game Setup',
     SETUP_PLAYER_TITLE: 'Players',
@@ -1001,8 +1028,12 @@ const EnglishStringData = {
     ROUND_WINS: 'Wins',
     ROUND_WINS_TEXT: 'Great job!',
     ROUND_TIE: 'Tie',
+    ROUND_PLAYER_1: '1️⃣',
+    ROUND_PLAYER_2: '2️⃣',
     ROUND_LEFT_TEXT: ``,
     ROUND_RIGHT_TEXT: ``,
+    ROUND_OPEN_TITLE: 'Open Floor!',
+    ROUND_OPEN_TEXT: 'What does everyone think?',
     ROUND_VOTE_TITLE: 'Who Will Win?',
     ROUND_VOTE_TEXT: 'Everyone, cast your vote!',
     ROUND_VOTE_TITLE2: 'Host: Lock in the winner!',
@@ -1032,8 +1063,8 @@ const EnglishStringData = {
         'The Host tallies the votes and declares the winner of the round... then a new round will begin!',
     ],
     DEFAULT_NAMES: [
-        'Player 1',
-        'Player 2',
+        'Mad Dog',
+        'Pretty Kitty',
     ],
     CHARACTERS: [
         'Robot',
@@ -1057,6 +1088,16 @@ const EnglishStringData = {
         'Amoeba',
         'Shark',
         'Whale',
+        'Angel',
+        'Reaper',
+        'Ghost',
+        'Cockroach',
+        'Boss Joe',
+        'Sword Master',
+    ],
+    GHCHARACTERS: [
+        'Boss Joe',
+        'Sword Master',
     ],
     POWERS: [
         'Elemental Magic',
@@ -1068,16 +1109,31 @@ const EnglishStringData = {
         'Master Sword',
         'Teleportation',
         'Shrinking Power',
-        'Super Sized',
+        'Giantness',
         'Time Control',
         'Invisibility',
         'Unlimited Wealth',
         'Summoning',
         'Cloning',
         'Healing Powers',
-        'Irresistibly Cute',
+        'Super Cuteness',
         'Bazooka',
         'Super Strength',
+        'Buzzsaw',
+        'Crafting Shards',
+        'Dragon Balls',
+        'Poop',
+        'Pokeball',
+        'Good Luck',
+        'Critical Hit!',
+        'Bacon Grease',
+        'Fairy Magic',
+        'Groovy Beats',
+        'Power Up',
+    ],
+    GHPOWERS: [
+        'Power Up',
+        'Crafting Shards',
     ],
 };
 const StringData = EnglishStringData;
@@ -1214,7 +1270,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/ImageUrl */ "./src/data/ImageUrl.ts");
 /* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
 /* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
-/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
+/* harmony import */ var _services_GameController__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/GameController */ "./src/services/GameController.ts");
+/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
+
 
 
 
@@ -1226,11 +1284,7 @@ __webpack_require__.r(__webpack_exports__);
 * bigger-text
 * giant-button
 */
-class CardPreviewUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_4__.BaseUI {
-    // private title: HTMLElement;
-    // private content: HTMLElement;
-    // private button1: HTMLElement;
-    // private button2: HTMLElement;
+class CardPreviewUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_5__.BaseUI {
     constructor() {
         super();
         this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('preview-ui');
@@ -1240,10 +1294,14 @@ class CardPreviewUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_4__.BaseUI {
         let powers = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText('Powers', 'biggest-text');
         _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(this.element, characters, characterSection, powers, powerSection);
         for (let i = 0; i < _data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CHARACTERS.length; i++) {
-            characterSection.appendChild(this.makeCharacter(i));
+            if (_services_GameController__WEBPACK_IMPORTED_MODULE_4__.GameController.GHMode || !_services_GameController__WEBPACK_IMPORTED_MODULE_4__.GameController.testGHCharacter(i)) {
+                characterSection.appendChild(this.makeCharacter(i));
+            }
         }
         for (let i = 0; i < _data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.POWERS.length; i++) {
-            powerSection.appendChild(this.makePower(i));
+            if (_services_GameController__WEBPACK_IMPORTED_MODULE_4__.GameController.GHMode || !_services_GameController__WEBPACK_IMPORTED_MODULE_4__.GameController.testGHPower(i)) {
+                powerSection.appendChild(this.makePower(i));
+            }
         }
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.showHome(true);
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.showBottom(false);
@@ -1338,7 +1396,6 @@ class CreditsUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_5__.BaseUI {
         ghLogo.style.marginLeft = '0.3em';
         ghLogo.style.transform = 'translateY(0.3em)';
         this.button1 = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.BUTTON_BACK, 'info-button', this.navigateBack);
-        // this.button2 = El.makeButton(StringData.BUTTON_INSTRUCTIONS, 'info-button', this.openInstructions);
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.showHome(false);
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.showBottom(false);
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.showCredits(false);
@@ -1362,13 +1419,7 @@ class CreditsUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_5__.BaseUI {
         // animateDiv(this.button2, AnimationType.BASIC_POP, 900);
     }
     navOut() {
-        // animateDiv(this.title, AnimationType.BACK_OUT, 100);
-        // animateDiv(this.button1, AnimationType.BACK_OUT, 200);
-        // animateDiv(this.button2, AnimationType.BACK_OUT, 200);
-        // animateDiv(this.element, AnimationType.SLIDE_OUT);
-        // new JMTween({}, 1000).to({}).start().onComplete(() => {
         this.element.parentElement.removeChild(this.element);
-        // });
     }
 }
 
@@ -1455,9 +1506,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
 /* harmony import */ var _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/animateDiv */ "./src/services/animateDiv.ts");
 /* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
-/* harmony import */ var _CardPreviewUI__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./CardPreviewUI */ "./src/pages/CardPreviewUI.ts");
-/* harmony import */ var _SetupUI__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./SetupUI */ "./src/pages/SetupUI.ts");
-/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
+/* harmony import */ var _services_GameController__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/GameController */ "./src/services/GameController.ts");
+/* harmony import */ var _CardPreviewUI__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./CardPreviewUI */ "./src/pages/CardPreviewUI.ts");
+/* harmony import */ var _SetupUI__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./SetupUI */ "./src/pages/SetupUI.ts");
+/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
+
 
 
 
@@ -1472,43 +1525,46 @@ __webpack_require__.r(__webpack_exports__);
 * bigger-text
 * giant-button
 */
-class MainUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_7__.BaseUI {
+class MainUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_8__.BaseUI {
     // private button2: HTMLElement;
     constructor() {
         super();
+        this.GTimerOn = false;
         this.navigateStart = () => {
-            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _SetupUI__WEBPACK_IMPORTED_MODULE_6__.SetupUI());
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _SetupUI__WEBPACK_IMPORTED_MODULE_7__.SetupUI());
         };
         this.navigatePreview = () => {
-            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _CardPreviewUI__WEBPACK_IMPORTED_MODULE_5__.CardPreviewUI());
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _CardPreviewUI__WEBPACK_IMPORTED_MODULE_6__.CardPreviewUI());
         };
         this.onKeyDown = (e) => {
             if (e.key === 'c') {
                 this.navigatePreview();
             }
+            else if (e.key === 'g') {
+                this.GTimerOn = true;
+                window.setTimeout(() => this.GTimerOn = false, 1000);
+            }
+            else if (e.key === 'h') {
+                this.enableGHMode();
+            }
         };
         this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeDiv('main-ui');
         this.title = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__.ImageUrl.Logo, 'main-logo');
         this.content = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.MAIN_CONTENT, 'bigger-text');
-        // this.title = El.makeText(StringData.GAME_TITLE, 'title');
-        // let buttonContainer = El.makeDiv('button-box');
+        this.gamehive = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.GAMEHIVE_EDITION, 'big-text');
         this.button1 = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.BUTTON_NEW_GAME, 'giant-button', this.navigateStart);
-        let preview = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeButton('See Cards', 'info-button', this.navigatePreview);
-        // this.button2 = El.makeButton(StringData.BUTTON_INSTRUCTIONS, 'info-button', this.openInstructions);
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.showHome(false);
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.showBottom(false);
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.showCredits(true);
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.hidden = true;
-        // El.addElements(buttonContainer, this.button1);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(this.element, this.title, this.content, this.button1);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(preview);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(this.element, this.title, this.gamehive, this.content, this.button1);
+        this.gamehive.style.display = 'none';
     }
     navIn() {
         (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.title, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.BASIC_POP, 300);
         (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.content, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.BASIC_POP, 600);
         (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.button1, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.BASIC_POP, 900);
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.popCredits(1200);
-        // animateDiv(this.button2, AnimationType.BASIC_POP, 900);
         window.addEventListener('keydown', this.onKeyDown);
     }
     navOut() {
@@ -1520,6 +1576,11 @@ class MainUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_7__.BaseUI {
         this.element.parentElement.removeChild(this.element);
         // });
         window.removeEventListener('keydown', this.onKeyDown);
+    }
+    enableGHMode() {
+        _services_GameController__WEBPACK_IMPORTED_MODULE_5__.GameController.GHMode = true;
+        this.gamehive.style.removeProperty('display');
+        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.gamehive, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.SPIN);
     }
 }
 
@@ -1610,14 +1671,14 @@ class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_11__.BaseUI {
                     ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.showButton('pause', true);
                 });
             });
-            this.timer.reset(10).blinkAt(3).onComplete(this.phaseLeftPlay).start();
+            this.timer.reset(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.timing.intro).blinkAt(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.blinkTiming.intro).onComplete(this.phaseLeftPlay).start();
             ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
             this.timer.canSkip = false;
         };
         this.phaseLeftPlay = () => {
             this.bottomTitle.innerHTML = `${_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[0]}, ${_data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_PLAY_TITLE}`;
             this.leftSection.classList.add('left-highlight');
-            this.timer.reset(20).blinkAt(3).onComplete(this.phaseRightPlay).start();
+            this.timer.reset(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.timing.player_left).blinkAt(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.blinkTiming.player_left).onComplete(this.phaseRightPlay).start();
             ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
             this.timer.canSkip = true;
             this.timer.element.classList.add('timer-left');
@@ -1633,7 +1694,7 @@ class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_11__.BaseUI {
             this.bottomTitle.innerHTML = `${_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[1]}, ${_data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_PLAY_TITLE}`;
             this.leftSection.classList.remove('left-highlight');
             this.rightSection.classList.add('right-highlight');
-            this.timer.reset(20).blinkAt(3).onComplete(this.phaseVote).start();
+            this.timer.reset(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.timing.player_right).blinkAt(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.blinkTiming.player_right).onComplete(this.phaseOpen).start();
             ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
             this.timer.element.classList.remove('timer-left');
             this.timer.element.classList.add('timer-right');
@@ -1644,13 +1705,33 @@ class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_11__.BaseUI {
             (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.PULSE);
             (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.PULSE);
         };
+        this.phaseOpen = () => {
+            if (!_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.open_phase) {
+                this.phaseVote();
+                return;
+            }
+            this.bottomTitle.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_OPEN_TITLE;
+            this.bottomContent.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_OPEN_TEXT;
+            this.leftSection.classList.add('left-highlight');
+            this.timer.reset(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.timing.open).blinkAt(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.blinkTiming.open).onComplete(this.phaseVote).start();
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
+            this.timer.element.classList.remove('timer-right');
+            this.element.appendChild(this.timer.element);
+            this.rightAvatar.setState('active');
+            this.leftAvatar.setState('active');
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.bottomTitle, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BASIC_POP);
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.bottomContent, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BASIC_POP, 100);
+            this.audience.style.removeProperty('display');
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.audience, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.SLIDE_IN);
+        };
         this.phaseVote = () => {
             this.canVote = true;
             this.bottomTitle.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_VOTE_TITLE;
             this.bottomContent.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_VOTE_TEXT;
+            this.leftSection.classList.remove('left-highlight');
             this.rightSection.classList.remove('right-highlight');
             ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.showButton('vote', true);
-            this.timer.reset(30).blinkAt(5).onComplete(this.phaseVote2).start();
+            this.timer.reset(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.timing.vote).blinkAt(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.blinkTiming.vote).onComplete(this.phaseVote2).start();
             ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
             this.timer.element.classList.remove('timer-right');
             this.element.appendChild(this.timer.element);
@@ -1659,13 +1740,24 @@ class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_11__.BaseUI {
             this.audience.style.removeProperty('display');
             (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.bottomTitle, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BASIC_POP);
             (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.bottomContent, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BASIC_POP, 100);
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.audience, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.SLIDE_IN);
+            if (!_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.open_phase) {
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.audience, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.SLIDE_IN);
+            }
         };
         this.phaseVote2 = () => {
             this.bottomTitle.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_VOTE_TITLE2;
             this.bottomContent.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_VOTE_TEXT2;
-            this.timer.reset(10).blinkAt(10).onComplete(this.phaseLeaderboard).start();
+            this.timer.reset(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.timing.vote2).blinkAt(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.blinkTiming.vote2).onComplete(this.phaseLeaderboard).start();
             ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
+            this.loopPulseVote();
+        };
+        this.loopPulseVote = () => {
+            if (!this.canVote)
+                return;
+            if (this.winner || this.winner === 0)
+                return;
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.pulseVotes();
+            window.setTimeout(this.loopPulseVote, 1000);
         };
         this.phaseLeaderboard = () => {
             this.canVote = false;
@@ -1673,7 +1765,7 @@ class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_11__.BaseUI {
             if (!this.winner && this.winner !== 0)
                 this.winner = -1;
             _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.winner = this.winner;
-            this.timer.reset(10).blinkAt(3).onComplete(this.navGame).start();
+            this.timer.reset(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.timing.leaderboard).blinkAt(_Config__WEBPACK_IMPORTED_MODULE_3__.SessionData.blinkTiming.leaderboard).onComplete(this.navGame).start();
             ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
             if (this.winner === 0) {
                 _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.scorePlayer(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.winner]);
@@ -1682,6 +1774,7 @@ class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_11__.BaseUI {
                 this.bottomTitle.innerHTML = `${_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[0]} Wins!`;
                 this.bottomContent.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_WINS_TEXT;
                 this.leftSection.appendChild(this.overlayWinner);
+                // this.winAnimateEnd = loopAnimation(this.overlayWinner, AnimationType.SMOOTH_PULSE, 0);
                 // this.rightSection.appendChild(this.overlayLoser);
             }
             else if (this.winner === 1) {
@@ -1690,6 +1783,7 @@ class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_11__.BaseUI {
                 this.rightAvatar.setState('win');
                 this.bottomTitle.innerHTML = `${_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[1]} Wins!`;
                 this.rightSection.appendChild(this.overlayWinner);
+                // this.winAnimateEnd = loopAnimation(this.overlayWinner, AnimationType.SMOOTH_PULSE, 0);
                 // this.leftSection.appendChild(this.overlayLoser);
             }
             else {
@@ -1712,6 +1806,7 @@ class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_11__.BaseUI {
             }
         };
         this.navGame = () => {
+            this.winAnimateEnd && this.winAnimateEnd();
             if (_services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.isGameOver()) {
                 ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _EndUI__WEBPACK_IMPORTED_MODULE_10__.EndUI());
             }
@@ -1735,8 +1830,8 @@ class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_11__.BaseUI {
         this.bottomTitle.style.zIndex = '1';
         this.bottomContent = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeText('', 'medium-text');
         this.bottomContent.style.zIndex = '1';
-        [this.leftSection, this.names[0], this.cards[0][0], this.cards[0][1]] = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.ElFactory.makePlayerSection(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[0]);
-        [this.rightSection, this.names[1], this.cards[1][0], this.cards[1][1]] = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.ElFactory.makePlayerSection(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[1]);
+        [this.leftSection, this.names[0], this.cards[0][0], this.cards[0][1]] = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.ElFactory.makePlayerSection(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[0], _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_PLAYER_1);
+        [this.rightSection, this.names[1], this.cards[1][0], this.cards[1][1]] = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.ElFactory.makePlayerSection(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[1], _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_PLAYER_2);
         this.vs = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_VS, 'vs-text');
         this.timer = new _components_TimerCircle__WEBPACK_IMPORTED_MODULE_2__.TimerCircle();
         this.leftAvatar = new _components_Avatar__WEBPACK_IMPORTED_MODULE_1__.Avatar();
@@ -1837,12 +1932,6 @@ class SetupUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_8__.BaseUI {
         this.navCircles = [];
         this.names = [];
         this.cPage = 0;
-        this.pulsing = true;
-        this.endlessPulse = () => {
-            if (!this.pulsing)
-                return;
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_4__.animateDiv)(this.startGame, _services_animateDiv__WEBPACK_IMPORTED_MODULE_4__.AnimationType.SMOOTH_PULSE, 0, this.endlessPulse);
-        };
         this.nextPage = () => {
             this.leftImage.src = _data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__.ImageUrl.InfoPages[this.cPage];
             this.instructions.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.InfoPages[this.cPage];
@@ -1917,7 +2006,6 @@ class SetupUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_8__.BaseUI {
         this.onKeyDown = (e) => {
             if (e.key === 'Enter') {
                 let selected = document.getSelection().focusNode;
-                console.log(selected);
                 let index = this.names.findIndex(el => el.element === selected);
                 if (index >= 0 && index < this.names.length - 1) {
                     let next = this.names[index + 1];
@@ -1928,7 +2016,6 @@ class SetupUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_8__.BaseUI {
                     if (newEl)
                         newEl.input.focus();
                 }
-                console.log(index);
             }
         };
         this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeDiv('setup-ui');
@@ -1991,7 +2078,7 @@ class SetupUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_8__.BaseUI {
         // animateDiv(this.startGame, AnimationType.SLIDE_IN, nameDelay + 100);
         // animateDiv(this.element, AnimationType.GROW_IN);
         window.addEventListener('keydown', this.onKeyDown);
-        this.endlessPulse();
+        this.endPulseAnimation = (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_4__.loopAnimation)(this.startGame, _services_animateDiv__WEBPACK_IMPORTED_MODULE_4__.AnimationType.SMOOTH_PULSE, 0);
     }
     navOut() {
         // animateDiv(this.element, AnimationType.SHRINK_OUT, 200);
@@ -2002,7 +2089,7 @@ class SetupUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_8__.BaseUI {
         _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.destroy(this.element);
         window.removeEventListener('keydown', this.onKeyDown);
         window.clearTimeout(this.cTimeout);
-        this.pulsing = false;
+        this.endPulseAnimation();
     }
     loadNames() {
         _Config__WEBPACK_IMPORTED_MODULE_1__.SessionData.players.forEach(el => {
@@ -2150,10 +2237,10 @@ const ElFactory = {
         });
         return tableInner;
     },
-    makePlayerSection: (name) => {
+    makePlayerSection: (name, namePrepend) => {
         let section = El.makeDiv('player-section');
         let cardSection = El.makeDiv('card-section');
-        let nameTitle = El.makeText(name, 'name-title');
+        let nameTitle = El.makeText((_Config__WEBPACK_IMPORTED_MODULE_1__.SessionData.prepends && namePrepend || '') + name, 'name-title');
         let card1El = El.makeDiv('card');
         let card2El = El.makeDiv('card');
         // card1El.innerHTML = card1;
@@ -2223,14 +2310,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const GameController = {
+    GHMode: false,
     selectPlayer: () => {
         let minPlay = Math.min(..._Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players.map(el => el.plays));
         let pool = _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players.filter(el => el.plays === minPlay && !_Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.players.includes(el.slug));
         let index = Math.floor(Math.random() * pool.length);
         let player = pool[index];
         player.plays++;
-        console.log(_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData);
-        console.log(pool, index, player);
         return player.slug;
     },
     scorePlayer: (name, amount = 1) => {
@@ -2240,7 +2326,6 @@ const GameController = {
     resetSession: (players) => {
         _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players = players.filter(el => el !== '').map(slug => ({ slug, score: 0, plays: 0 }));
         _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.plays_each = GameController.calculatePlays(_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players.length);
-        console.log(_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players);
         _Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.round = 0;
         _Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.players = [];
         _Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.cards = [[], []];
@@ -2249,7 +2334,9 @@ const GameController = {
     selectCharacter: () => {
         if (_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.characterDeck.length === 0) {
             for (let i = 0; i < _data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.CHARACTERS.length; i++) {
-                _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.characterDeck.push(i);
+                if (GameController.GHMode || !GameController.testGHCharacter(i)) {
+                    _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.characterDeck.push(i);
+                }
             }
             // Cards.Characters.forEach(card => SessionData.characterDeck.push(card));
         }
@@ -2261,7 +2348,9 @@ const GameController = {
     selectPower: () => {
         if (_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.powerDeck.length === 0) {
             for (let i = 0; i < _data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.POWERS.length; i++) {
-                _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.powerDeck.push(i);
+                if (GameController.GHMode || !GameController.testGHPower(i)) {
+                    _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.powerDeck.push(i);
+                }
             }
             // Cards.Powers.forEach(card => SessionData.powerDeck.push(card));
         }
@@ -2294,6 +2383,14 @@ const GameController = {
             return 2;
         }
     },
+    testGHCharacter: (index) => {
+        let char = _data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.CHARACTERS[index];
+        return (_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.GHCHARACTERS.includes(char));
+    },
+    testGHPower: (index) => {
+        let char = _data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.POWERS[index];
+        return (_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.GHPOWERS.includes(char));
+    },
 };
 GameController.resetSession(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.DEFAULT_NAMES);
 
@@ -2310,7 +2407,9 @@ GameController.resetSession(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.String
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AnimationType": () => (/* binding */ AnimationType),
-/* harmony export */   "animateDiv": () => (/* binding */ animateDiv)
+/* harmony export */   "animateDiv": () => (/* binding */ animateDiv),
+/* harmony export */   "applyTransform": () => (/* binding */ applyTransform),
+/* harmony export */   "loopAnimation": () => (/* binding */ loopAnimation)
 /* harmony export */ });
 /* harmony import */ var _JMGE_JMTween__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../JMGE/JMTween */ "./src/JMGE/JMTween.ts");
 
@@ -2333,6 +2432,16 @@ var AnimationType;
     AnimationType[AnimationType["FLIP_A"] = 14] = "FLIP_A";
     AnimationType[AnimationType["FLIP_B"] = 15] = "FLIP_B";
 })(AnimationType || (AnimationType = {}));
+function loopAnimation(element, index, delay) {
+    let animating = true;
+    let animate = () => {
+        if (!animating)
+            return;
+        animateDiv(element, index, delay, animate);
+    };
+    animate();
+    return () => animating = false;
+}
 function animateDiv(element, index, delay = 0, onComplete) {
     let obj = { height: 1, width: 1, rotation: 0, x: 0, y: 0 };
     switch (index) {

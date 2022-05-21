@@ -2,7 +2,9 @@ import { Facade } from '..';
 import { SessionData } from '../Config';
 import { ImageUrl } from '../data/ImageUrl';
 import { StringData } from '../data/StringData';
+import { CreditsUI } from '../pages/CreditsUI';
 import { MainUI } from '../pages/MainUI';
+import { SetupUI } from '../pages/SetupUI';
 
 export const El = {
   makeText: (title: string, className?: string) => {
@@ -60,7 +62,7 @@ export const ElFactory = {
 
   makeBottomBar: () => {
     let bottom = El.makeDiv('bottom-bar');
-    let bottomText = El.makeText(StringData.BOTTOM_DESCRIPTION);
+    let bottomText = El.makeText(StringData.BOTTOM_DESCRIPTION, 'small-text');
     let TOGraphic = El.makeImg(ImageUrl.ToJam, 'bottom-image');
     let GHGraphic = El.makeImg(ImageUrl.GameHive, 'bottom-image');
     El.addElements(bottom, bottomText, GHGraphic, TOGraphic);
@@ -69,9 +71,21 @@ export const ElFactory = {
   },
 
   makeHomeButton: () => {
-    let home = El.makeButton(StringData.BUTTON_HOME, 'home-button', () => Facade.navTo(new MainUI()));
+    let home = El.makeButton('', 'home-button', () => Facade.navTo(new SetupUI()));
+    let img = El.makeImg(ImageUrl.IconHome);
+    img.style.width = '3em';
+    home.appendChild(img);
 
     return home;
+  },
+
+  makeCreditsButton: () => {
+    let credits = El.makeButton('Credits', 'credits-button', () => Facade.navTo(new CreditsUI()));
+    // let img = El.makeImg(ImageUrl.IconCredits);
+    // img.style.width = '3em';
+    // credits.appendChild(img);
+
+    return credits;
   },
 
   makeLeaderboard: () => {
@@ -98,7 +112,7 @@ export const ElFactory = {
     return tableInner;
   },
 
-  makePlayerSection: (name: string, card1: string, card2: string) => {
+  makePlayerSection: (name: string) => {
     let section = El.makeDiv('player-section');
     let cardSection = El.makeDiv('card-section');
     let nameTitle = El.makeText(name, 'name-title');

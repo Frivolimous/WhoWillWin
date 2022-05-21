@@ -1,5 +1,4 @@
 import { RoundData, SessionData } from '../Config';
-import { Cards } from '../data/Cards';
 import { StringData } from '../data/StringData';
 
 export const GameController = {
@@ -34,7 +33,10 @@ export const GameController = {
 
   selectCharacter: () => {
     if (SessionData.characterDeck.length === 0) {
-      Cards.Characters.forEach(card => SessionData.characterDeck.push(card));
+      for (let i = 0; i < StringData.CHARACTERS.length; i++) {
+        SessionData.characterDeck.push(i);
+      }
+      // Cards.Characters.forEach(card => SessionData.characterDeck.push(card));
     }
     let index = Math.floor(Math.random() * SessionData.characterDeck.length);
     let m = SessionData.characterDeck[index];
@@ -44,7 +46,10 @@ export const GameController = {
 
   selectPower: () => {
     if (SessionData.powerDeck.length === 0) {
-      Cards.Powers.forEach(card => SessionData.powerDeck.push(card));
+      for (let i = 0; i < StringData.POWERS.length; i++) {
+        SessionData.powerDeck.push(i);
+      }
+      // Cards.Powers.forEach(card => SessionData.powerDeck.push(card));
     }
     let index = Math.floor(Math.random() * SessionData.powerDeck.length);
     let m = SessionData.powerDeck[index];
@@ -73,8 +78,8 @@ export const GameController = {
   calculatePlays: (numPlayers: number) => {
     if (numPlayers === 2) {
       return 3;
-    } else if (numPlayers > 5 && numPlayers % 2 === 0) {
-      return 1;
+    // } else if (numPlayers > 5 && numPlayers % 2 === 0) {
+    //   return 1;
     } else {
       return 2;
     }

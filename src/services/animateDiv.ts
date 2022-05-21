@@ -14,6 +14,7 @@ export enum AnimationType {
   GROW_IN,
   SHRINK_OUT,
   PULSE,
+  SMOOTH_PULSE,
   FLIP_A,
   FLIP_B,
 }
@@ -99,6 +100,12 @@ export function animateDiv(element: HTMLElement, index: AnimationType, delay: nu
       obj.height = 1;
       applyTransform(element, obj);
       new JMTween(obj, 250).wait(delay).to({width: 1.3, height: 1.3}).onUpdate(() => applyTransform(element, obj)).easing(JMEasing.Quadratic.InOut).yoyo(true, 1).onComplete(() => {element.style.transform = ''; onComplete && onComplete(); }).start();
+      break;
+    case AnimationType.SMOOTH_PULSE:
+      obj.width = 1;
+      obj.height = 1;
+      applyTransform(element, obj);
+      new JMTween(obj, 800).wait(delay).to({width: 1.1, height: 1.1}).onUpdate(() => applyTransform(element, obj)).easing(JMEasing.Quadratic.InOut).yoyo(true, 1).onComplete(() => {element.style.transform = ''; onComplete && onComplete(); }).start();
       break;
     case AnimationType.FLIP_A:
       obj.width = 1;

@@ -1,5 +1,6 @@
 import { StringData } from '../data/StringData';
 import { JMTween } from '../JMGE/JMTween';
+import { animateDiv, AnimationType } from '../services/animateDiv';
 import { El } from '../services/ElementFactory';
 
 export class TimerCircle {
@@ -17,8 +18,9 @@ export class TimerCircle {
   private _canSkip: boolean;
 
   private cTimeout: number;
+  private _blinkAt: number = 3;
 
-  constructor(showControls = true) {
+  constructor(showControls = false) {
     this.element = El.makeDiv('timer-container');
     this.timer = El.makeText('99', 'timer');
     El.addElements(this.element, this.timer);
@@ -36,6 +38,8 @@ export class TimerCircle {
 
   public set canSkip(b: boolean) {
     this._canSkip = b;
+
+    if (!this.skipButton) return;
     if (b) {
       this.pauseButton.style.removeProperty('display');
       this.skipButton.style.removeProperty('display');
@@ -52,6 +56,12 @@ export class TimerCircle {
   public destroy() {
     this.paused = true;
     this._onComplete = null;
+  }
+
+  public blinkAt(seconds: number) {
+    this._blinkAt = seconds;
+
+    return this;
   }
 
   public reset(seconds?: number) {
@@ -88,6 +98,13 @@ export class TimerCircle {
     return this as TimerCircle;
   }
 
+  public skipTimer = () => {
+    console.log('a');
+    if (this._canSkip) {
+      this.endNow();
+    }
+  }
+
   public endNow = () => {
     this.paused = true;
     window.clearTimeout(this.cTimeout);
@@ -97,13 +114,15 @@ export class TimerCircle {
   }
 
   public pauseTimer = () => {
-    if (!this._canSkip) return;
+    if (!this._canSkip) return false;
 
     if (this.paused) {
       this.start();
     } else {
       this.pause();
     }
+
+    return this.paused;
   }
 
   private tickTimer = () => {
@@ -111,6 +130,9 @@ export class TimerCircle {
 
     this.currentSeconds--;
     this.timer.innerHTML = Math.ceil(this.currentSeconds).toString();
+    if (this.currentSeconds <= this._blinkAt && this.currentSeconds > 0) {
+      animateDiv(this.timer, AnimationType.PULSE);
+    }
 
     if (this.currentSeconds === 0) {
       this.endNow();

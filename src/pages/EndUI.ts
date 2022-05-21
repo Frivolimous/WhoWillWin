@@ -6,6 +6,7 @@ import { El, ElFactory } from '../services/ElementFactory';
 import { GameController } from '../services/GameController';
 import { MainUI } from './MainUI';
 import { RoundUI } from './RoundUI';
+import { SetupUI } from './SetupUI';
 import { BaseUI } from './_BaseUI';
 
 export class EndUI extends BaseUI {
@@ -14,20 +15,20 @@ export class EndUI extends BaseUI {
     super();
     this.element = El.makeDiv('end-ui');
 
-    let title = El.makeText(StringData.GAME_OVER_TITLE, 'title');
-    let mainSection = El.makeDiv('content');
+    let title = El.makeText(StringData.GAME_OVER_TITLE, 'biggest-text');
     let table = El.makeDiv('table-container');
 
     let buttonContainer = El.makeDiv('button-box');
 
-    let button1 = El.makeButton(StringData.BUTTON_MAIN_MENU, 'info-button', this.navHome);
     let button2 = El.makeButton(StringData.BUTTON_PLAY_AGAIN, 'info-button', this.navGame);
 
-    Facade.showHome(true);
+    Facade.showHome(false);
+    Facade.showBottom(false);
+    Facade.showCredits(true);
+    Facade.controlBar.hidden = true;
 
-    El.addElements(this.element, title, mainSection, buttonContainer);
-    El.addElements(mainSection, table);
-    El.addElements(buttonContainer, button1, button2);
+    El.addElements(this.element, title, table, buttonContainer);
+    El.addElements(buttonContainer, button2);
 
     let tableInner = ElFactory.makeLeaderboard();
     table.appendChild(tableInner);
@@ -51,6 +52,6 @@ export class EndUI extends BaseUI {
 
   private navGame = () => {
     GameController.restartGame();
-    Facade.navTo(new RoundUI());
+    Facade.navTo(new SetupUI());
   }
 }

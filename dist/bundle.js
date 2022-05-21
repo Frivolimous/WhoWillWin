@@ -20,6 +20,7 @@ const SessionData = {
     gameLength: 'Play Twice',
     characterDeck: [],
     powerDeck: [],
+    plays_each: 2,
 };
 const RoundData = {
     round: 0,
@@ -473,57 +474,216 @@ const JMEasing = {
 
 /***/ }),
 
-/***/ "./src/components/InfoPanel.ts":
-/*!*************************************!*\
-  !*** ./src/components/InfoPanel.ts ***!
-  \*************************************/
+/***/ "./src/components/Avatar.ts":
+/*!**********************************!*\
+  !*** ./src/components/Avatar.ts ***!
+  \**********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "InfoPanel": () => (/* binding */ InfoPanel)
+/* harmony export */   "Avatar": () => (/* binding */ Avatar)
 /* harmony export */ });
-/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
-/* harmony import */ var _services_animateDiv__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/animateDiv */ "./src/services/animateDiv.ts");
+/* harmony import */ var _data_ImageUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/ImageUrl */ "./src/data/ImageUrl.ts");
+/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
 
 
-class InfoPanel {
+class Avatar {
     constructor() {
-        this.destroy = () => {
-            document.body.removeChild(this.element);
-        };
-        this.element = document.createElement('div');
-        this.element.classList.add('info-panel');
-        document.body.appendChild(this.element);
-        let top = document.createElement('div');
-        top.classList.add('top');
-        this.element.appendChild(top);
-        top.innerHTML = `
-    <div class="info-title">${_data_StringData__WEBPACK_IMPORTED_MODULE_0__.StringData.INFO_TITLE}</div>
-    <div class="info-subtitle">${_data_StringData__WEBPACK_IMPORTED_MODULE_0__.StringData.INFO_SUBTITLE}</div>`;
-        this.contentElement = document.createElement('div');
-        this.contentElement.classList.add('info-content');
-        top.appendChild(this.contentElement);
-        this.contentElement.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_0__.StringData.INFO_DESCRIPTION;
-        let button = document.createElement('button');
-        button.classList.add('close-button');
-        this.element.appendChild(button);
-        button.innerHTML = 'X';
-        button.addEventListener('click', () => this.hidden = true);
-        this.element.style.display = 'none';
+        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_1__.El.makeDiv('avatar-container');
+        this.image = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_1__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_0__.ImageUrl.PlayerTalk1, 'avatar-content');
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_1__.El.addElements(this.element, this.image);
     }
     get hidden() {
         return this.element.style.display === 'none';
     }
     set hidden(b) {
         if (b) {
-            // this.element.style.display = 'none';
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_1__.animateDiv)(this.element, _services_animateDiv__WEBPACK_IMPORTED_MODULE_1__.AnimationType.SHRINK_OUT);
+            this.element.style.display = 'none';
         }
         else {
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_1__.animateDiv)(this.element, _services_animateDiv__WEBPACK_IMPORTED_MODULE_1__.AnimationType.GROW_IN);
             this.element.style.removeProperty('display');
+        }
+    }
+    setState(state) {
+        switch (state) {
+            case 'active':
+                this.image.src = _data_ImageUrl__WEBPACK_IMPORTED_MODULE_0__.ImageUrl.PlayerTalk1;
+                break;
+            case 'passive':
+                this.image.src = _data_ImageUrl__WEBPACK_IMPORTED_MODULE_0__.ImageUrl.PlayerWait1;
+                break;
+            case 'win':
+                this.image.src = _data_ImageUrl__WEBPACK_IMPORTED_MODULE_0__.ImageUrl.PlayerWin1;
+                break;
+            case 'lose':
+                this.image.src = _data_ImageUrl__WEBPACK_IMPORTED_MODULE_0__.ImageUrl.PlayerLose1;
+                break;
+            case 'neutral':
+                this.image.src = _data_ImageUrl__WEBPACK_IMPORTED_MODULE_0__.ImageUrl.PlayerNeutral1;
+                break;
+            case 'ready':
+                this.image.src = _data_ImageUrl__WEBPACK_IMPORTED_MODULE_0__.ImageUrl.PlayerReady1;
+                break;
+        }
+    }
+    faceRight(b) {
+        if (b) {
+            this.image.style.transform = 'scaleX(-1)';
+        }
+        else {
+            this.image.style.removeProperty('transform');
+            this.element.classList.add('avatar-right');
+        }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/components/BottomControls.ts":
+/*!******************************************!*\
+  !*** ./src/components/BottomControls.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "BottomControls": () => (/* binding */ BottomControls)
+/* harmony export */ });
+/* harmony import */ var _Config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Config */ "./src/Config.ts");
+/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
+/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
+
+
+
+class BottomControls {
+    constructor() {
+        this.destroy = () => {
+            document.body.removeChild(this.element);
+        };
+        this.onTimerRefreshed = () => {
+            this.pause.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_PAUSE;
+        };
+        this.onSkip = () => {
+            if (this.skip.style.display === 'none')
+                return;
+            this._onSkip && this._onSkip();
+        };
+        this.onPause = () => {
+            if (this.pause.style.display === 'none')
+                return;
+            if (this._onPause) {
+                let paused = this._onPause();
+                if (paused) {
+                    this.pause.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_RESUME;
+                }
+                else {
+                    this.pause.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_PAUSE;
+                }
+            }
+        };
+        this.onVote = (player) => {
+            if (this.voteLeft.style.display === 'none')
+                return;
+            if (player === 0) {
+                this.voteLeft.classList.add('highlighted');
+                this.voteRight.classList.remove('highlighted');
+                this.voteTie.classList.remove('highlighted');
+            }
+            else if (player === 1) {
+                this.voteRight.classList.add('highlighted');
+                this.voteLeft.classList.remove('highlighted');
+                this.voteTie.classList.remove('highlighted');
+            }
+            else {
+                this.voteRight.classList.remove('highlighted');
+                this.voteLeft.classList.remove('highlighted');
+                this.voteTie.classList.add('highlighted');
+            }
+            if (this._onVote) {
+                this._onVote(player);
+            }
+        };
+        this.onKeyDown = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                this.onSkip();
+            }
+            else if (e.key === 'p') {
+                this.onPause();
+            }
+            else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === '1') {
+                this.onVote(0);
+            }
+            else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === '3') {
+                this.onVote(1);
+            }
+            else if (e.key === 'ArrowDown' || e.key === 's' || e.key === '2') {
+                this.onVote(-1);
+            }
+        };
+        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeDiv('bottom-bar');
+        this.element.style.position = 'absolute';
+        this.element.style.bottom = '0';
+        this.skip = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_SKIP, 'info-button', this.onSkip);
+        this.pause = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_PAUSE, 'info-button', this.onPause);
+        this.voteLeft = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(`<< ${_Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.players[0]} ${_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_WINS}`, 'wide-button', () => this.onVote(0));
+        this.voteRight = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(`${_Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.players[1]} ${_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_WINS} >>`, 'wide-button', () => this.onVote(1));
+        this.voteTie = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_TIE, 'info-button', () => this.onVote(-1));
+        let voteContainer = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeDiv('bottom-vote-container');
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.addElements(this.element, this.pause, voteContainer, this.skip);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.addElements(voteContainer, this.voteLeft, this.voteTie, this.voteRight);
+        document.body.appendChild(this.element);
+        this.element.style.display = 'none';
+        document.addEventListener('keydown', this.onKeyDown);
+    }
+    get hidden() {
+        return this.element.style.display === 'none';
+    }
+    set hidden(b) {
+        if (b) {
+            this.element.style.display = 'none';
+        }
+        else {
+            this.element.style.removeProperty('display');
+        }
+    }
+    setCallbacks(onSkip, onPause, onVote) {
+        this._onPause = onPause;
+        this._onSkip = onSkip;
+        this._onVote = onVote;
+    }
+    clearCallbacks() {
+        this._onPause = this.onSkip = this.onVote = null;
+    }
+    setNames(player0, player1) {
+        this.voteLeft.innerHTML = `<< ${player0} ${_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_WINS}`;
+        this.voteRight.innerHTML = `${player1} ${_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.ROUND_WINS} >>`;
+    }
+    showButton(button, value = true) {
+        if (button === 'skip') {
+            this.toggleVisible(this.skip, value);
+        }
+        else if (button === 'pause') {
+            this.toggleVisible(this.pause, value);
+        }
+        else {
+            this.toggleVisible(this.voteLeft, value);
+            this.toggleVisible(this.voteRight, value);
+            this.toggleVisible(this.voteTie, value);
+            this.voteRight.classList.remove('highlighted');
+            this.voteLeft.classList.remove('highlighted');
+            this.voteTie.classList.remove('highlighted');
+        }
+    }
+    toggleVisible(el, b) {
+        if (b) {
+            el.style.removeProperty('display');
+        }
+        else {
+            el.style.display = 'none';
         }
     }
 }
@@ -543,55 +703,70 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "TimerCircle": () => (/* binding */ TimerCircle)
 /* harmony export */ });
 /* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
-/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
+/* harmony import */ var _services_animateDiv__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/animateDiv */ "./src/services/animateDiv.ts");
+/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
+
 
 
 class TimerCircle {
-    constructor(showControls = true) {
-        this.paused = false;
+    constructor(showControls = false) {
+        this.paused = true;
+        this._blinkAt = 3;
+        this.skipTimer = () => {
+            console.log('a');
+            if (this._canSkip) {
+                this.endNow();
+            }
+        };
         this.endNow = () => {
             this.paused = true;
-            this._onComplete && this._onComplete();
+            window.clearTimeout(this.cTimeout);
+            let onComplete = this._onComplete;
             this._onComplete = null;
-            // if (this._canSkip) this.tween.stop(true);
+            onComplete && onComplete();
         };
         this.pauseTimer = () => {
             if (!this._canSkip)
-                return;
+                return false;
             if (this.paused) {
                 this.start();
             }
             else {
                 this.pause();
             }
+            return this.paused;
         };
         this.tickTimer = () => {
             if (this.paused)
                 return;
             this.currentSeconds--;
             this.timer.innerHTML = Math.ceil(this.currentSeconds).toString();
+            if (this.currentSeconds <= this._blinkAt && this.currentSeconds > 0) {
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_1__.animateDiv)(this.timer, _services_animateDiv__WEBPACK_IMPORTED_MODULE_1__.AnimationType.PULSE);
+            }
             if (this.currentSeconds === 0) {
-                this._onComplete && this._onComplete();
-                this._onComplete = null;
+                this.endNow();
             }
             else {
-                window.setTimeout(this.tickTimer, 1000);
+                this.cTimeout = window.setTimeout(this.tickTimer, 1000);
             }
         };
-        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_1__.El.makeDiv('timer-container');
-        this.timer = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_1__.El.makeText('99', 'timer');
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_1__.El.addElements(this.element, this.timer);
+        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeDiv('timer-container');
+        this.timer = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeText('99', 'timer');
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.addElements(this.element, this.timer);
         // this.tween = new JMTween<TimerCircle>(this, 99000).to({currentSeconds: 0})
         //   .onComplete(() => this._onComplete && this._onComplete())
         //   .onUpdate(this.onUpdate);
         if (showControls) {
-            this.skipButton = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_1__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_0__.StringData.BUTTON_SKIP, 'small-button', this.endNow);
-            this.pauseButton = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_1__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_0__.StringData.BUTTON_PAUSE, 'small-button', this.pauseTimer);
-            _services_ElementFactory__WEBPACK_IMPORTED_MODULE_1__.El.addElements(this.element, this.skipButton, this.pauseButton);
+            this.skipButton = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_0__.StringData.BUTTON_SKIP, 'small-button', this.endNow);
+            this.pauseButton = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_0__.StringData.BUTTON_PAUSE, 'small-button', this.pauseTimer);
+            _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.addElements(this.element, this.skipButton, this.pauseButton);
         }
     }
     set canSkip(b) {
         this._canSkip = b;
+        if (!this.skipButton)
+            return;
         if (b) {
             this.pauseButton.style.removeProperty('display');
             this.skipButton.style.removeProperty('display');
@@ -601,9 +776,16 @@ class TimerCircle {
             this.skipButton.style.display = 'none';
         }
     }
+    get canSkip() {
+        return this._canSkip;
+    }
     destroy() {
         this.paused = true;
         this._onComplete = null;
+    }
+    blinkAt(seconds) {
+        this._blinkAt = seconds;
+        return this;
     }
     reset(seconds) {
         if (seconds) {
@@ -638,110 +820,6 @@ class TimerCircle {
 
 /***/ }),
 
-/***/ "./src/data/Cards.ts":
-/*!***************************!*\
-  !*** ./src/data/Cards.ts ***!
-  \***************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Cards": () => (/* binding */ Cards)
-/* harmony export */ });
-const Cards = {
-    Characters: [
-        'Human',
-        'Mouse',
-        'Elephant',
-        'Cat',
-        'Wolf',
-        'Anaconda',
-        'Tiger',
-        'Amoeba',
-        'Poison Frog',
-        'Tardigrade',
-        'Great White Shark',
-        'Blue Whale',
-        'Goat',
-        'Mosquito',
-        'Fire Dragon',
-        'Pegasus',
-        'T-Rex',
-        'Gorilla',
-        'Satan',
-        'Zeus',
-        'Venus Fly Trap',
-        'Covid Particle',
-        'Raven',
-        'Bat',
-        'Grizzly Bear',
-        'Rabbit',
-        'Scorpion/Lobster',
-        'Cerberus?',
-        'Electric Eel',
-        'Armadillo or Porcupine',
-        'Giraffe',
-        'Hippopotamus',
-        'Moose',
-        'Swarm of Wasps',
-        'Koala',
-        'Badger',
-        'Seal',
-        'Ant Army',
-        'Ghost',
-        'Alien',
-        'Robot',
-        'Wizard',
-    ],
-    Powers: [
-        'x100 Size',
-        'Ant size',
-        'Travel at Speed of Light',
-        'Superman Strength',
-        'X1000 clones',
-        'Teleport',
-        'Bazooka',
-        'Katana',
-        'Thumbtack',
-        'Rocketship',
-        'Hammer (Mjolnir)',
-        'Jet Pack',
-        'Mech Suit',
-        'Ninja Stars',
-        'Super Brain (Mojo jojo)',
-        'Wildcard (hi-tech device)',
-        'Forcefield',
-        'Elemental Powers (Fire/Water/Air/Earth)',
-        'Weather Control',
-        'Gravity Control',
-        'Swiss Army Knife',
-        'Laser Beam?',
-        'Fighter Jet',
-        'Concert Speakers',
-        'Pan of Bacon Grease',
-        'Summoning (any object)',
-        'Anvil? Anchor?',
-        'Grenade',
-        'Regenerating Body',
-        'Psychic',
-        'Shapeshifting',
-        'Counter??',
-        'Irresistible Cuteness',
-        'Jeff Bezo’s Credit Card',
-        'Time Control',
-        'Wolverine Claws',
-        '9 lives',
-        'Invisibility',
-        'Chainsaw',
-        'Super Lucky',
-        'Bear Trap',
-    ],
-};
-
-
-/***/ }),
-
 /***/ "./src/data/Fonts.ts":
 /*!***************************!*\
   !*** ./src/data/Fonts.ts ***!
@@ -759,7 +837,7 @@ const Fonts = {
     FLYING: 'Coda Caption',
     // SCORE: 'Odibee Sans',
 };
-const FontArray = ['Roboto', 'Cedarville Cursive', 'Macondo'];
+const FontArray = ['Roboto', 'Cedarville Cursive', 'Patrick Hand', 'Indie Flower'];
 
 
 /***/ }),
@@ -773,12 +851,108 @@ const FontArray = ['Roboto', 'Cedarville Cursive', 'Macondo'];
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "ImageUrl": () => (/* binding */ ImageUrl)
+/* harmony export */   "ImageUrl": () => (/* binding */ ImageUrl),
+/* harmony export */   "setupImageCards": () => (/* binding */ setupImageCards)
 /* harmony export */ });
+const path = './img/';
 const ImageUrl = {
     ToJam: './img/ToJam.png',
-    GameHive: './img/GameHive.jpg',
+    GameHive: './img/GH-Logo.png',
+    Button1: './img/Button1.png',
+    Button2: './img/Button2.png',
+    Button3: './img/Button3.png',
+    Button4: './img/Button4.png',
+    CardBack: './img/CardBack.png',
+    CardFront: './img/CardFront.png',
+    Character1: './img/Character1.png',
+    Character2: './img/Character2.png',
+    Power1: './img/Power1.png',
+    Power2: './img/Power2.png',
+    GridBG: './img/GridBG.png',
+    Logo: './img/Logo.png',
+    PlayerTalk1: './img/PlayerTalk1.png',
+    PlayerWait1: './img/PlayerWait1.png',
+    PlayerWin1: './img/PlayerWin1.png',
+    PlayerLose1: './img/PlayerLose1.png',
+    PlayerNeutral1: './img/PlayerNeutral1.png',
+    PlayerReady1: './img/PlayerReady1.png',
+    Timer: './img/Timer.png',
+    TurnHighlight: './img/TurnHighlight.png',
+    Audience: './img/Audience1.png',
+    PortraitLeft: './img/PortraitDebbie.png',
+    PortraitRight: './img/PortraitJeremy.png',
+    PortraitSmall: './img/PortraitSam.png',
+    OverlayWinner: './img/ScribbleWin.png',
+    OverlayLoser: './img/ScribbleLose.png',
+    Divider: './img/Divider.png',
+    IconHome: './img/IconHome.png',
+    InfoPages: [
+        './img/Logo1.png', './img/HTP_Host1.png', './img/HTP_Cards1.png', './img/HTP_Player1.png', './img/HTP_Audience1.png', './img/HTP_Winner1.png',
+    ],
+    Characters: [],
+    Powers: [],
 };
+function setupImageCards(numChars, numPowers) {
+    for (let i = 1; i <= numChars; i++) {
+        ImageUrl.Characters.push(`./img/cards/Character${i}.png`);
+    }
+    for (let i = 1; i <= numPowers; i++) {
+        ImageUrl.Powers.push(`./img/cards/Power${i}.png`);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/data/PageRef.ts":
+/*!*****************************!*\
+  !*** ./src/data/PageRef.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "PageRef": () => (/* binding */ PageRef)
+/* harmony export */ });
+/* harmony import */ var _pages_CardPreviewUI__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../pages/CardPreviewUI */ "./src/pages/CardPreviewUI.ts");
+/* harmony import */ var _pages_CreditsUI__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../pages/CreditsUI */ "./src/pages/CreditsUI.ts");
+/* harmony import */ var _pages_EndUI__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../pages/EndUI */ "./src/pages/EndUI.ts");
+/* harmony import */ var _pages_MainUI__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../pages/MainUI */ "./src/pages/MainUI.ts");
+/* harmony import */ var _pages_RoundUI__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../pages/RoundUI */ "./src/pages/RoundUI.ts");
+/* harmony import */ var _pages_SetupUI__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../pages/SetupUI */ "./src/pages/SetupUI.ts");
+
+
+
+
+
+
+const PageRef = [
+    {
+        slug: '#mainmenu',
+        con: _pages_MainUI__WEBPACK_IMPORTED_MODULE_3__.MainUI,
+    },
+    {
+        slug: '#gamesetup',
+        con: _pages_SetupUI__WEBPACK_IMPORTED_MODULE_5__.SetupUI,
+    },
+    {
+        slug: '#gameround',
+        con: _pages_RoundUI__WEBPACK_IMPORTED_MODULE_4__.RoundUI,
+    },
+    {
+        slug: '#gameover',
+        con: _pages_EndUI__WEBPACK_IMPORTED_MODULE_2__.EndUI,
+    },
+    {
+        slug: '#preview',
+        con: _pages_CardPreviewUI__WEBPACK_IMPORTED_MODULE_0__.CardPreviewUI,
+    },
+    {
+        slug: '#credits',
+        con: _pages_CreditsUI__WEBPACK_IMPORTED_MODULE_1__.CreditsUI,
+    },
+];
 
 
 /***/ }),
@@ -797,12 +971,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 const EnglishStringData = {
     GAME_TITLE: 'Squabble Squabble!',
+    MAIN_CONTENT: 'A social game for virtual happy hours!',
+    // MAIN_CONTENT: 'A social game played through video conferencing software',
     SETUP_TITLE: 'Game Setup',
     SETUP_PLAYER_TITLE: 'Players',
     SETUP_OPTIONS_TITLE: 'How to Play',
-    SETUP_OPTIONS_TEXT: `Each round, two players face off.<br> Players 
+    SETUP_OPTIONS_TEXT: `Each round, two players face off.<br>
+    Players take turns describing how their combo will win.<br>
+    At the end of each round, the audience votes on which player they think will win.<br>
+    The host tally's the votes and selects the winner!
   `,
-    GAME_OVER_TITLE: 'Game Over',
+    GAME_OVER_TITLE: 'Congratulations!',
+    CREDITS_TITLE: 'Credits',
+    CREDITS_LEFT_TITLE: 'Debbie Chan',
+    CREDITS_LEFT_CONTENT: 'The Artist',
+    CREDITS_RIGHT_TITLE: 'Jeremy Moshe',
+    CREDITS_RIGHT_CONTENT: 'The Developer',
+    CREDITS_SMALL_TITLE: 'Samuel Cheung',
+    CREDITS_SMALL_CONTENT: 'Game idea inspired by something this guy said that one time...',
+    CREDITS_MADE_AT: 'A game made at',
+    CREDITS_GH: 'Squabble Squabble is created by a team from',
     RESULT_WINNER: 'And the winner is...',
     TABLE_NAME: 'Name',
     TABLE_SCORE: 'Score',
@@ -811,12 +999,13 @@ const EnglishStringData = {
     ROUND_INTRO_TEXT: 'Get ready to fight...',
     ROUND_PLAY_TITLE: 'What do you do?',
     ROUND_WINS: 'Wins',
+    ROUND_WINS_TEXT: 'Great job!',
     ROUND_TIE: 'Tie',
     ROUND_LEFT_TEXT: ``,
     ROUND_RIGHT_TEXT: ``,
     ROUND_VOTE_TITLE: 'Who Will Win?',
-    ROUND_VOTE_TEXT: 'Any last words..?<br>Vote Now!',
-    ROUND_VOTE_TITLE2: 'Choose Now!',
+    ROUND_VOTE_TEXT: 'Everyone, cast your vote!',
+    ROUND_VOTE_TITLE2: 'Host: Lock in the winner!',
     ROUND_VOTE_TEXT2: 'Tally up the votes and select the winner.',
     ROUND_TIE_TITLE: 'Tie Game!',
     ROUND_TIE_TEXT: 'You each get half a point.',
@@ -827,21 +1016,68 @@ const EnglishStringData = {
     BUTTON_PAUSE: 'pause',
     BUTTON_RESUME: 'resume',
     BUTTON_HOME: 'Home',
-    BUTTON_NEW_GAME: 'New Game',
+    BUTTON_BACK: 'Back',
+    BUTTON_NEW_GAME: 'Let\'s Play!',
     BUTTON_INSTRUCTIONS: 'Instructions',
     BUTTON_MAIN_MENU: 'Main Menu',
     BUTTON_PLAY_AGAIN: 'Play Again!',
-    INFO_TITLE: 'Instructions',
-    INFO_SUBTITLE: 'How To Play',
-    INFO_DESCRIPTION: 'Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum ',
+    INFO_TITLE: 'How to Play',
     BOTTOM_DESCRIPTION: 'Created by Jeremy Moshe and Debbie Chan, 2022, as part of TO Jam.',
+    InfoPages: [
+        'Squabble Squabble is a social game designed to be played over video conferencing.',
+        'The game\'s Host shares their screen with the rest of the players.',
+        'Each round, two challengers will face off with random Characters and Powers.',
+        'The two challengers get 20 seconds each to describe how they defeat their opponent.',
+        'After the challengers do their thing, the audience will get 30 seconds to chime in and vote over video or chat.',
+        'The Host tallies the votes and declares the winner of the round... then a new round will begin!',
+    ],
     DEFAULT_NAMES: [
-        'Debbie',
-        'Jeremy',
-        'Rambo',
-        'Josh',
-        'Pascal',
-        'Bob',
+        'Player 1',
+        'Player 2',
+    ],
+    CHARACTERS: [
+        'Robot',
+        'Wasp',
+        'Armadillo',
+        'Bunny',
+        'Grizzly Bear',
+        'Raven',
+        'Coronavirus',
+        'T-Rex',
+        'Unicorn',
+        'Human',
+        'Kitty',
+        'Wolf',
+        'Tiger',
+        'Tardigrade',
+        'Snake',
+        'Goat',
+        'Dragon',
+        'Mosquito',
+        'Amoeba',
+        'Shark',
+        'Whale',
+    ],
+    POWERS: [
+        'Elemental Magic',
+        'Rocket Ship',
+        'Mech Suit',
+        'Force Field',
+        'Super Smarts',
+        'Thumb Tack',
+        'Master Sword',
+        'Teleportation',
+        'Shrinking Power',
+        'Super Sized',
+        'Time Control',
+        'Invisibility',
+        'Unlimited Wealth',
+        'Summoning',
+        'Cloning',
+        'Healing Powers',
+        'Irresistibly Cute',
+        'Bazooka',
+        'Super Strength',
     ],
 };
 const StringData = EnglishStringData;
@@ -861,12 +1097,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "Facade": () => (/* binding */ Facade),
 /* harmony export */   "interactionMode": () => (/* binding */ interactionMode)
 /* harmony export */ });
-/* harmony import */ var _components_InfoPanel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/InfoPanel */ "./src/components/InfoPanel.ts");
-/* harmony import */ var _pages_RoundUI__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./pages/RoundUI */ "./src/pages/RoundUI.ts");
-/* harmony import */ var _services_FontLoader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./services/FontLoader */ "./src/services/FontLoader.ts");
-/* harmony import */ var _data_Fonts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./data/Fonts */ "./src/data/Fonts.ts");
-/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/ElementFactory */ "./src/services/ElementFactory.ts");
+/* harmony import */ var _services_FontLoader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./services/FontLoader */ "./src/services/FontLoader.ts");
+/* harmony import */ var _data_Fonts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./data/Fonts */ "./src/data/Fonts.ts");
+/* harmony import */ var _pages_MainUI__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./pages/MainUI */ "./src/pages/MainUI.ts");
+/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./services/ElementFactory */ "./src/services/ElementFactory.ts");
+/* harmony import */ var _components_BottomControls__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/BottomControls */ "./src/components/BottomControls.ts");
+/* harmony import */ var _data_PageRef__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./data/PageRef */ "./src/data/PageRef.ts");
+/* harmony import */ var _data_ImageUrl__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./data/ImageUrl */ "./src/data/ImageUrl.ts");
+/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./data/StringData */ "./src/data/StringData.ts");
+/* harmony import */ var _services_animateDiv__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./services/animateDiv */ "./src/services/animateDiv.ts");
 var _a;
+
+
+
+
 
 
 
@@ -885,19 +1129,31 @@ let Facade = new (_a = class FacadeInner {
             catch (e) {
             }
             this.element = document.getElementById('main');
-            this.instructions = new _components_InfoPanel__WEBPACK_IMPORTED_MODULE_0__.InfoPanel();
-            this.bottomBar = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.ElFactory.makeBottomBar();
+            this.bottomBar = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.ElFactory.makeBottomBar();
+            this.controlBar = new _components_BottomControls__WEBPACK_IMPORTED_MODULE_4__.BottomControls();
             let body = document.body;
             body.appendChild(this.bottomBar);
-            this.homeButton = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.ElFactory.makeHomeButton();
+            this.homeButton = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.ElFactory.makeHomeButton();
+            this.creditsButton = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.ElFactory.makeCreditsButton();
             body.appendChild(this.homeButton);
-            _services_FontLoader__WEBPACK_IMPORTED_MODULE_2__.FontLoader.load(_data_Fonts__WEBPACK_IMPORTED_MODULE_3__.FontArray);
+            body.appendChild(this.creditsButton);
+            body.appendChild(this.controlBar.element);
+            (0,_data_ImageUrl__WEBPACK_IMPORTED_MODULE_6__.setupImageCards)(_data_StringData__WEBPACK_IMPORTED_MODULE_7__.StringData.CHARACTERS.length, _data_StringData__WEBPACK_IMPORTED_MODULE_7__.StringData.POWERS.length);
+            _services_FontLoader__WEBPACK_IMPORTED_MODULE_0__.FontLoader.load(_data_Fonts__WEBPACK_IMPORTED_MODULE_1__.FontArray);
             window.requestAnimationFrame(() => this.init());
         }
         init() {
+            let hash = window.location.hash;
+            let page = _data_PageRef__WEBPACK_IMPORTED_MODULE_5__.PageRef.find(el => el.slug === hash);
+            if (page) {
+                this.navTo(new page.con());
+            }
+            else {
+                this.navTo(new _pages_MainUI__WEBPACK_IMPORTED_MODULE_2__.MainUI());
+            }
             // this.navTo(new MainUI());
             // this.navTo(new SetupUI());
-            this.navTo(new _pages_RoundUI__WEBPACK_IMPORTED_MODULE_1__.RoundUI());
+            // this.navTo(new RoundUI());
             // this.navTo(new EndUI());
         }
         navTo(nextPage) {
@@ -909,9 +1165,6 @@ let Facade = new (_a = class FacadeInner {
             this.element.appendChild(nextPage.element);
             nextPage.navIn();
         }
-        showInstructions() {
-            this.instructions.hidden = false;
-        }
         showHome(b) {
             if (b) {
                 this.homeButton.style.removeProperty('display');
@@ -920,9 +1173,204 @@ let Facade = new (_a = class FacadeInner {
                 this.homeButton.style.display = 'none';
             }
         }
+        showCredits(b) {
+            if (b) {
+                this.creditsButton.style.removeProperty('display');
+            }
+            else {
+                this.creditsButton.style.display = 'none';
+            }
+        }
+        popCredits(delay = 0) {
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_8__.animateDiv)(this.creditsButton, _services_animateDiv__WEBPACK_IMPORTED_MODULE_8__.AnimationType.BASIC_POP, delay);
+        }
+        showBottom(b) {
+            if (b) {
+                this.bottomBar.style.removeProperty('display');
+            }
+            else {
+                this.bottomBar.style.display = 'none';
+            }
+        }
     },
     _a.exists = false,
     _a)();
+
+
+/***/ }),
+
+/***/ "./src/pages/CardPreviewUI.ts":
+/*!************************************!*\
+  !*** ./src/pages/CardPreviewUI.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "CardPreviewUI": () => (/* binding */ CardPreviewUI)
+/* harmony export */ });
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! .. */ "./src/index.ts");
+/* harmony import */ var _data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/ImageUrl */ "./src/data/ImageUrl.ts");
+/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
+/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
+/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
+
+
+
+
+
+/* css used:
+* main-ui
+* main-logo
+* bigger-text
+* giant-button
+*/
+class CardPreviewUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_4__.BaseUI {
+    // private title: HTMLElement;
+    // private content: HTMLElement;
+    // private button1: HTMLElement;
+    // private button2: HTMLElement;
+    constructor() {
+        super();
+        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('preview-ui');
+        let characterSection = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('preview-section-ui');
+        let powerSection = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('preview-section-ui');
+        let characters = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText('Characters', 'biggest-text');
+        let powers = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText('Powers', 'biggest-text');
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(this.element, characters, characterSection, powers, powerSection);
+        for (let i = 0; i < _data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CHARACTERS.length; i++) {
+            characterSection.appendChild(this.makeCharacter(i));
+        }
+        for (let i = 0; i < _data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.POWERS.length; i++) {
+            powerSection.appendChild(this.makePower(i));
+        }
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showHome(true);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showBottom(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showCredits(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.hidden = true;
+    }
+    navIn() {
+        // animateDiv(this.button2, AnimationType.BASIC_POP, 900);
+    }
+    navOut() {
+        this.element.parentElement.removeChild(this.element);
+    }
+    makeCharacter(slug) {
+        let card = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('card');
+        card.innerHTML = `<img src = ${_data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__.ImageUrl.Characters[slug]} class = "card-image"><div class= "card-text">${_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CHARACTERS[slug]}</div>`;
+        return card;
+    }
+    makePower(slug) {
+        let card = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('card');
+        card.innerHTML = `<img src = ${_data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__.ImageUrl.Powers[slug]} class = "card-image"><div class= "card-text">${_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.POWERS[slug]}</div>`;
+        return card;
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/pages/CreditsUI.ts":
+/*!********************************!*\
+  !*** ./src/pages/CreditsUI.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "CreditsUI": () => (/* binding */ CreditsUI)
+/* harmony export */ });
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! .. */ "./src/index.ts");
+/* harmony import */ var _data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/ImageUrl */ "./src/data/ImageUrl.ts");
+/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
+/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
+/* harmony import */ var _SetupUI__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./SetupUI */ "./src/pages/SetupUI.ts");
+/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
+
+
+
+
+
+
+/* css used:
+* credits-ui
+* credits-middle
+* credits-bottom
+* credits-card
+* credits-card-small
+* credits-card-image
+* credits-card-image-small
+*/
+class CreditsUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_5__.BaseUI {
+    constructor() {
+        super();
+        this.navigateBack = () => {
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _SetupUI__WEBPACK_IMPORTED_MODULE_4__.SetupUI());
+        };
+        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('credits-ui');
+        this.title = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CREDITS_TITLE, 'biggest-text');
+        let middle = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('credits-middle');
+        let bottom = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('credits-bottom');
+        this.leftCard = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('credits-card');
+        let leftCard = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('card');
+        let leftImg = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__.ImageUrl.PortraitLeft, 'credits-card-image');
+        let leftTitle = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CREDITS_LEFT_TITLE, 'big-text');
+        let leftContent = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CREDITS_LEFT_CONTENT, 'medium-text');
+        this.rightCard = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('credits-card');
+        let rightCard = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('card');
+        let rightImg = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__.ImageUrl.PortraitRight, 'credits-card-image');
+        let rightTitle = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CREDITS_RIGHT_TITLE, 'big-text');
+        let rightContent = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CREDITS_RIGHT_CONTENT, 'medium-text');
+        this.bottomCard = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('credits-card-small');
+        let bottomCard = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeDiv('card-small');
+        let bottomImg = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__.ImageUrl.PortraitSmall, 'credits-card-image-small');
+        let bottomTitle = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CREDITS_SMALL_TITLE, 'small-text');
+        let bottomContent = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CREDITS_SMALL_CONTENT, 'tiny-text');
+        let made = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CREDITS_MADE_AT, 'medium-text');
+        let gamehiveText = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.CREDITS_GH, 'medium-text');
+        made.style.margin = '0.5em';
+        let logo = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__.ImageUrl.ToJam, 'bottom-image');
+        logo.style.marginLeft = '0.5em';
+        let ghLogo = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__.ImageUrl.GameHive, 'bottom-image');
+        ghLogo.style.height = '2em';
+        ghLogo.style.marginLeft = '0.3em';
+        ghLogo.style.transform = 'translateY(0.3em)';
+        this.button1 = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.BUTTON_BACK, 'info-button', this.navigateBack);
+        // this.button2 = El.makeButton(StringData.BUTTON_INSTRUCTIONS, 'info-button', this.openInstructions);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showHome(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showBottom(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showCredits(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.hidden = true;
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(this.element, this.title, gamehiveText, middle, bottom);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(middle, this.leftCard, this.rightCard);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(bottom, this.bottomCard, this.button1, made);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(made, logo);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(gamehiveText, ghLogo);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(this.leftCard, leftCard, leftTitle, leftContent);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(leftCard, leftImg);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(this.rightCard, rightCard, rightTitle, rightContent);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(rightCard, rightImg);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(this.bottomCard, bottomCard, bottomTitle, bottomContent);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_3__.El.addElements(bottomCard, bottomImg);
+    }
+    navIn() {
+        //   animateDiv(this.title, AnimationType.BASIC_POP, 300);
+        //   animateDiv(this.content, AnimationType.BASIC_POP, 600);
+        //   animateDiv(this.button1, AnimationType.BASIC_POP, 900);
+        // animateDiv(this.button2, AnimationType.BASIC_POP, 900);
+    }
+    navOut() {
+        // animateDiv(this.title, AnimationType.BACK_OUT, 100);
+        // animateDiv(this.button1, AnimationType.BACK_OUT, 200);
+        // animateDiv(this.button2, AnimationType.BACK_OUT, 200);
+        // animateDiv(this.element, AnimationType.SLIDE_OUT);
+        // new JMTween({}, 1000).to({}).start().onComplete(() => {
+        this.element.parentElement.removeChild(this.element);
+        // });
+    }
+}
 
 
 /***/ }),
@@ -943,7 +1391,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
 /* harmony import */ var _services_GameController__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/GameController */ "./src/services/GameController.ts");
 /* harmony import */ var _MainUI__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./MainUI */ "./src/pages/MainUI.ts");
-/* harmony import */ var _RoundUI__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./RoundUI */ "./src/pages/RoundUI.ts");
+/* harmony import */ var _SetupUI__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./SetupUI */ "./src/pages/SetupUI.ts");
 /* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
 
 
@@ -960,19 +1408,19 @@ class EndUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_6__.BaseUI {
         };
         this.navGame = () => {
             _services_GameController__WEBPACK_IMPORTED_MODULE_3__.GameController.restartGame();
-            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _RoundUI__WEBPACK_IMPORTED_MODULE_5__.RoundUI());
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _SetupUI__WEBPACK_IMPORTED_MODULE_5__.SetupUI());
         };
         this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeDiv('end-ui');
-        let title = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.GAME_OVER_TITLE, 'title');
-        let mainSection = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeDiv('content');
+        let title = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.GAME_OVER_TITLE, 'biggest-text');
         let table = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeDiv('table-container');
         let buttonContainer = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeDiv('button-box');
-        let button1 = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_MAIN_MENU, 'info-button', this.navHome);
         let button2 = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_PLAY_AGAIN, 'info-button', this.navGame);
-        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showHome(true);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.addElements(this.element, title, mainSection, buttonContainer);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.addElements(mainSection, table);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.addElements(buttonContainer, button1, button2);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showHome(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showBottom(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showCredits(true);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.hidden = true;
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.addElements(this.element, title, table, buttonContainer);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.El.addElements(buttonContainer, button2);
         let tableInner = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_2__.ElFactory.makeLeaderboard();
         table.appendChild(tableInner);
     }
@@ -1003,12 +1451,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "MainUI": () => (/* binding */ MainUI)
 /* harmony export */ });
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! .. */ "./src/index.ts");
-/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
-/* harmony import */ var _JMGE_JMTween__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../JMGE/JMTween */ "./src/JMGE/JMTween.ts");
+/* harmony import */ var _data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/ImageUrl */ "./src/data/ImageUrl.ts");
+/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
 /* harmony import */ var _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/animateDiv */ "./src/services/animateDiv.ts");
 /* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
-/* harmony import */ var _SetupUI__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./SetupUI */ "./src/pages/SetupUI.ts");
-/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
+/* harmony import */ var _CardPreviewUI__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./CardPreviewUI */ "./src/pages/CardPreviewUI.ts");
+/* harmony import */ var _SetupUI__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./SetupUI */ "./src/pages/SetupUI.ts");
+/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
 
 
 
@@ -1016,37 +1465,61 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class MainUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_6__.BaseUI {
+
+/* css used:
+* main-ui
+* main-logo
+* bigger-text
+* giant-button
+*/
+class MainUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_7__.BaseUI {
+    // private button2: HTMLElement;
     constructor() {
         super();
         this.navigateStart = () => {
-            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _SetupUI__WEBPACK_IMPORTED_MODULE_5__.SetupUI());
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _SetupUI__WEBPACK_IMPORTED_MODULE_6__.SetupUI());
         };
-        this.openInstructions = () => {
-            ___WEBPACK_IMPORTED_MODULE_0__.Facade.showInstructions();
+        this.navigatePreview = () => {
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _CardPreviewUI__WEBPACK_IMPORTED_MODULE_5__.CardPreviewUI());
+        };
+        this.onKeyDown = (e) => {
+            if (e.key === 'c') {
+                this.navigatePreview();
+            }
         };
         this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeDiv('main-ui');
-        this.title = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.GAME_TITLE, 'title');
-        let buttonContainer = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeDiv('button-box');
-        this.button1 = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_NEW_GAME, 'info-button', this.navigateStart);
-        this.button2 = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.BUTTON_INSTRUCTIONS, 'info-button', this.openInstructions);
+        this.title = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_1__.ImageUrl.Logo, 'main-logo');
+        this.content = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.MAIN_CONTENT, 'bigger-text');
+        // this.title = El.makeText(StringData.GAME_TITLE, 'title');
+        // let buttonContainer = El.makeDiv('button-box');
+        this.button1 = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.BUTTON_NEW_GAME, 'giant-button', this.navigateStart);
+        let preview = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeButton('See Cards', 'info-button', this.navigatePreview);
+        // this.button2 = El.makeButton(StringData.BUTTON_INSTRUCTIONS, 'info-button', this.openInstructions);
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.showHome(false);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(buttonContainer, this.button1, this.button2);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(this.element, this.title, buttonContainer);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showBottom(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showCredits(true);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.hidden = true;
+        // El.addElements(buttonContainer, this.button1);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(this.element, this.title, this.content, this.button1);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(preview);
     }
     navIn() {
         (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.title, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.BASIC_POP, 300);
-        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.button1, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.BASIC_POP, 600);
-        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.button2, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.BASIC_POP, 900);
+        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.content, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.BASIC_POP, 600);
+        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.button1, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.BASIC_POP, 900);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.popCredits(1200);
+        // animateDiv(this.button2, AnimationType.BASIC_POP, 900);
+        window.addEventListener('keydown', this.onKeyDown);
     }
     navOut() {
         // animateDiv(this.title, AnimationType.BACK_OUT, 100);
         // animateDiv(this.button1, AnimationType.BACK_OUT, 200);
         // animateDiv(this.button2, AnimationType.BACK_OUT, 200);
-        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.element, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.SLIDE_OUT);
-        new _JMGE_JMTween__WEBPACK_IMPORTED_MODULE_2__.JMTween({}, 1000).to({}).start().onComplete(() => {
-            this.element.parentElement.removeChild(this.element);
-        });
+        // animateDiv(this.element, AnimationType.SLIDE_OUT);
+        // new JMTween({}, 1000).to({}).start().onComplete(() => {
+        this.element.parentElement.removeChild(this.element);
+        // });
+        window.removeEventListener('keydown', this.onKeyDown);
     }
 }
 
@@ -1065,15 +1538,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "RoundUI": () => (/* binding */ RoundUI)
 /* harmony export */ });
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! .. */ "./src/index.ts");
-/* harmony import */ var _components_TimerCircle__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/TimerCircle */ "./src/components/TimerCircle.ts");
-/* harmony import */ var _Config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Config */ "./src/Config.ts");
-/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
-/* harmony import */ var _JMGE_JMTween__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../JMGE/JMTween */ "./src/JMGE/JMTween.ts");
-/* harmony import */ var _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/animateDiv */ "./src/services/animateDiv.ts");
-/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
-/* harmony import */ var _services_GameController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/GameController */ "./src/services/GameController.ts");
-/* harmony import */ var _EndUI__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./EndUI */ "./src/pages/EndUI.ts");
-/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
+/* harmony import */ var _components_Avatar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/Avatar */ "./src/components/Avatar.ts");
+/* harmony import */ var _components_TimerCircle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/TimerCircle */ "./src/components/TimerCircle.ts");
+/* harmony import */ var _Config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Config */ "./src/Config.ts");
+/* harmony import */ var _data_ImageUrl__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../data/ImageUrl */ "./src/data/ImageUrl.ts");
+/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
+/* harmony import */ var _JMGE_JMTween__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../JMGE/JMTween */ "./src/JMGE/JMTween.ts");
+/* harmony import */ var _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/animateDiv */ "./src/services/animateDiv.ts");
+/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
+/* harmony import */ var _services_GameController__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/GameController */ "./src/services/GameController.ts");
+/* harmony import */ var _EndUI__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./EndUI */ "./src/pages/EndUI.ts");
+/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
 
 
 
@@ -1084,231 +1559,229 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_9__.BaseUI {
+
+
+/* css used:
+* round-ui
+* round-top
+* round-bottom
+* round-title
+*/
+class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_11__.BaseUI {
     constructor() {
         super();
         this.names = [];
         this.cards = [[], []];
         this.canVote = false;
         this.phaseIntro = () => {
-            new _JMGE_JMTween__WEBPACK_IMPORTED_MODULE_4__.JMTween({}, 300).to({}).start().onComplete(() => {
-                _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.addElements(this.topSection, this.leftSection, this.vs, this.rightSection);
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.leftSection, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.GROW_IN);
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.names[0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.BIG_IN, 0);
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.vs, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.GROW_IN, 1000);
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.rightSection, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.GROW_IN, 1500);
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.names[1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.BIG_IN, 1500);
+            new _JMGE_JMTween__WEBPACK_IMPORTED_MODULE_6__.JMTween({}, 300).to({}).start().onComplete(() => {
+                _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.addElements(this.topSection, this.leftSection, this.vs, this.rightSection);
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.leftSection, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN);
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.names[0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BIG_IN, 0);
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.vs, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN, 1000);
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.rightSection, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN, 1500);
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.names[1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BIG_IN, 1500);
                 this.cards[0][0].classList.add('card-back-character');
                 this.cards[0][1].classList.add('card-back-power');
                 this.cards[1][0].classList.add('card-back-character');
                 this.cards[1][1].classList.add('card-back-power');
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[0][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.GROW_IN, 2500, () => (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[0][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.FLIP_A, 0, () => {
-                    this.cards[0][0].classList.remove('card-back-character');
-                    this.cards[0][0].innerHTML = _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[0][0];
-                    (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[0][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.FLIP_B);
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN, 2500, () => (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_A, 0, () => {
+                    this.setCardFront(this.cards[0][0], _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[0][0], true, false);
+                    (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_B);
                 }));
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[0][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.GROW_IN, 2600, () => (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[0][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.FLIP_A, 0, () => {
-                    this.cards[0][1].classList.remove('card-back-power');
-                    this.cards[0][1].innerHTML = _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[0][1];
-                    (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[0][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.FLIP_B);
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN, 2600, () => (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_A, 0, () => {
+                    this.setCardFront(this.cards[0][1], _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[0][1], true, true);
+                    (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_B);
                 }));
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[1][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.GROW_IN, 3000, () => (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[1][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.FLIP_A, 0, () => {
-                    this.cards[1][0].classList.remove('card-back-character');
-                    this.cards[1][0].innerHTML = _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[1][0];
-                    (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[1][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.FLIP_B);
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN, 3000, () => (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_A, 0, () => {
+                    this.setCardFront(this.cards[1][0], _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[1][0], false, false);
+                    (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_B);
                 }));
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[1][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.GROW_IN, 3100, () => (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[1][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.FLIP_A, 0, () => {
-                    this.cards[1][1].classList.remove('card-back-power');
-                    this.cards[1][1].innerHTML = _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[1][1];
-                    (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.cards[1][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.FLIP_B);
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN, 3100, () => (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_A, 0, () => {
+                    this.setCardFront(this.cards[1][1], _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[1][1], false, true);
+                    (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_B);
                 }));
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.names[0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.BIG_OUT, 5000);
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.names[1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.BIG_OUT, 5000);
-                this.bottomTitle.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_INTRO_TITLE;
-                this.bottomText.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_INTRO_TEXT;
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.bottomTitle, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.GROW_IN, 3500);
-                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.bottomText, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.GROW_IN, 3800);
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.names[0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BIG_OUT, 5000);
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.names[1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BIG_OUT, 5000);
+                this.bottomTitle.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_INTRO_TITLE;
+                (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.bottomTitle, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN, 3500, () => {
+                    this.timer.canSkip = true;
+                    ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.showButton('skip', true);
+                    ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.showButton('pause', true);
+                });
             });
-            // El.addElements(this.topSection, this.leftSection, this.vs, this.rightSection);
-            this.timer.reset(10).onComplete(this.phaseLeftPlay).start();
+            this.timer.reset(10).blinkAt(3).onComplete(this.phaseLeftPlay).start();
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
             this.timer.canSkip = false;
         };
         this.phaseLeftPlay = () => {
-            this.bottomTitle.innerHTML = `${_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[0]}, ${_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_PLAY_TITLE}`;
-            this.bottomText.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_LEFT_TEXT;
-            this.leftSection.classList.add('highlighted');
-            this.timer.reset(15).onComplete(this.phaseRightPlay).start();
+            this.bottomTitle.innerHTML = `${_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[0]}, ${_data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_PLAY_TITLE}`;
+            this.leftSection.classList.add('left-highlight');
+            this.timer.reset(20).blinkAt(3).onComplete(this.phaseRightPlay).start();
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
             this.timer.canSkip = true;
-            this.timer.element.style.position = 'relative';
-            this.timer.element.style.top = '0px';
+            this.timer.element.classList.add('timer-left');
+            this.leftSection.appendChild(this.leftAvatar.element);
+            this.rightSection.appendChild(this.rightAvatar.element);
             this.leftSection.appendChild(this.timer.element);
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.bottomTitle, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.SPIN);
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.leftSection, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.PULSE);
+            this.rightAvatar.setState('passive');
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.bottomTitle, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BASIC_POP, 200);
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.PULSE);
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.PULSE);
         };
         this.phaseRightPlay = () => {
-            this.bottomTitle.innerHTML = `${_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[1]}, ${_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_PLAY_TITLE}`;
-            this.bottomText.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_RIGHT_TEXT;
-            this.leftSection.classList.remove('highlighted');
-            this.rightSection.classList.add('highlighted');
-            this.timer.reset(15).onComplete(this.phaseVote).start();
-            this.timer.element.style.position = 'relative';
-            this.timer.element.style.top = '0px';
+            this.bottomTitle.innerHTML = `${_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[1]}, ${_data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_PLAY_TITLE}`;
+            this.leftSection.classList.remove('left-highlight');
+            this.rightSection.classList.add('right-highlight');
+            this.timer.reset(20).blinkAt(3).onComplete(this.phaseVote).start();
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
+            this.timer.element.classList.remove('timer-left');
+            this.timer.element.classList.add('timer-right');
             this.rightSection.appendChild(this.timer.element);
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.bottomTitle, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.SPIN);
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.rightSection, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.PULSE);
+            this.rightAvatar.setState('active');
+            this.leftAvatar.setState('passive');
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.bottomTitle, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BASIC_POP, 200);
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.PULSE);
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.PULSE);
         };
         this.phaseVote = () => {
             this.canVote = true;
-            this.bottomTitle.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_VOTE_TITLE;
-            this.bottomText.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_VOTE_TEXT;
-            this.rightSection.classList.remove('highlighted');
-            this.leftVote.style.removeProperty('display');
-            this.rightVote.style.removeProperty('display');
-            this.tieVote.style.removeProperty('display');
-            this.timer.reset(50).onComplete(this.phaseVote2).start();
-            this.timer.element.style.removeProperty('position');
-            this.timer.element.style.removeProperty('top');
+            this.bottomTitle.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_VOTE_TITLE;
+            this.bottomContent.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_VOTE_TEXT;
+            this.rightSection.classList.remove('right-highlight');
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.showButton('vote', true);
+            this.timer.reset(30).blinkAt(5).onComplete(this.phaseVote2).start();
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
+            this.timer.element.classList.remove('timer-right');
             this.element.appendChild(this.timer.element);
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.bottomTitle, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.BASIC_POP);
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.bottomText, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.BASIC_POP, 200);
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.leftVote, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.SLIDE_IN, 100);
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.rightVote, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.SLIDE_IN, 200);
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.tieVote, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.SLIDE_IN, 300);
+            this.rightAvatar.setState('ready');
+            this.leftAvatar.setState('ready');
+            this.audience.style.removeProperty('display');
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.bottomTitle, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BASIC_POP);
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.bottomContent, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.BASIC_POP, 100);
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.audience, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.SLIDE_IN);
         };
         this.phaseVote2 = () => {
-            this.bottomTitle.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_VOTE_TITLE2;
-            this.bottomText.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_VOTE_TEXT2;
-            this.timer.reset(10).onComplete(this.phaseLeaderboard).start();
+            this.bottomTitle.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_VOTE_TITLE2;
+            this.bottomContent.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_VOTE_TEXT2;
+            this.timer.reset(10).blinkAt(10).onComplete(this.phaseLeaderboard).start();
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
         };
         this.phaseLeaderboard = () => {
             this.canVote = false;
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.showButton('vote', false);
             if (!this.winner && this.winner !== 0)
                 this.winner = -1;
-            _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.winner = this.winner;
-            _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.destroyThese(this.leftVote, this.rightVote, this.tieVote, this.vs);
-            this.timer.reset(10).onComplete(this.navGame).start();
+            _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.winner = this.winner;
+            this.timer.reset(10).blinkAt(3).onComplete(this.navGame).start();
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.onTimerRefreshed();
             if (this.winner === 0) {
-                _services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.scorePlayer(_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.winner]);
-                let leaderboard = this.addLeaderboard();
-                _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.destroyThese(this.bottomSection, this.rightSection);
-                _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.addElements(this.topSection, leaderboard);
+                _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.scorePlayer(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.winner]);
+                this.leftAvatar.setState('win');
+                this.rightAvatar.setState('lose');
+                this.bottomTitle.innerHTML = `${_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[0]} Wins!`;
+                this.bottomContent.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_WINS_TEXT;
+                this.leftSection.appendChild(this.overlayWinner);
+                // this.rightSection.appendChild(this.overlayLoser);
             }
             else if (this.winner === 1) {
-                _services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.scorePlayer(_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.winner]);
-                let leaderboard = this.addLeaderboard();
-                _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.destroyThese(this.bottomSection, this.leftSection);
-                _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.addElements(this.topSection, leaderboard, this.rightSection);
+                _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.scorePlayer(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.winner]);
+                this.leftAvatar.setState('lose');
+                this.rightAvatar.setState('win');
+                this.bottomTitle.innerHTML = `${_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[1]} Wins!`;
+                this.rightSection.appendChild(this.overlayWinner);
+                // this.leftSection.appendChild(this.overlayLoser);
             }
             else {
-                _services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.scorePlayer(_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[0], 0.5);
-                _services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.scorePlayer(_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[1], 0.5);
-                let leaderboard = this.addLeaderboard();
-                this.bottomTitle.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_TIE_TITLE;
-                this.bottomText.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_TIE_TEXT;
-                _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.destroyThese(this.leftSection, this.rightSection);
-                _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.addElements(this.topSection, leaderboard);
+                this.rightAvatar.setState('passive');
+                this.leftAvatar.setState('passive');
+                _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.scorePlayer(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[0], 0.5);
+                _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.scorePlayer(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[1], 0.5);
+                this.bottomTitle.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_TIE_TITLE;
+                this.bottomContent.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_TIE_TEXT;
+            }
+        };
+        this.setWinner = (player) => {
+            if (!this.canVote)
+                return;
+            if (this.winner === player) {
+                this.phaseLeaderboard();
+            }
+            else {
+                this.winner = player;
             }
         };
         this.navGame = () => {
-            if (_services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.isGameOver()) {
-                ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _EndUI__WEBPACK_IMPORTED_MODULE_8__.EndUI());
+            if (_services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.isGameOver()) {
+                ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _EndUI__WEBPACK_IMPORTED_MODULE_10__.EndUI());
             }
             else {
                 ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new RoundUI());
             }
         };
-        this.onKeyDown = (e) => {
-            console.log(e.key);
-            if (e.key === 'Enter' || e.key === ' ') {
-                this.timer.endNow();
-            }
-            else if (e.key === 'p') {
-                this.timer.pauseTimer();
-            }
-            else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === '1') {
-                this.setWinner(0);
-            }
-            else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === '2') {
-                this.setWinner(1);
-            }
-            else if (e.key === 'ArrowDown' || e.key === 's' || e.key === '3') {
-                this.setWinner(-1);
-            }
-        };
-        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeDiv('round-ui');
-        let round = ++_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.round;
-        _services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.resetRound();
-        _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[0] = _services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.selectPlayer();
-        _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[1] = _services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.selectPlayer();
-        _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[0][0] = _services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.selectCharacter();
-        _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[1][0] = _services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.selectCharacter();
-        _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[0][1] = _services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.selectPower();
-        _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[1][1] = _services_GameController__WEBPACK_IMPORTED_MODULE_7__.GameController.selectPower();
-        this.title = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeText(`${_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_TITLE} ${round}`, 'title');
-        this.topSection = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeDiv('round-top');
-        this.bottomSection = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeDiv('round-bottom');
-        this.bottomTitle = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeText('', 'round-title');
-        this.bottomText = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeText('', 'round-text');
-        [this.leftSection, this.names[0], this.cards[0][0], this.cards[0][1]] = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.ElFactory.makePlayerSection(_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[0], _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[0][0], _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[0][1]);
-        [this.rightSection, this.names[1], this.cards[1][0], this.cards[1][1]] = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.ElFactory.makePlayerSection(_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[1], _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[1][0], _Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.cards[1][1]);
-        this.vs = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_VS, 'round-vs');
-        let voteContainer = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeDiv('vote-container');
-        this.leftVote = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeButton(`${_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[0]} ${_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_WINS}`, 'vote-button', () => this.setWinner(0));
-        this.rightVote = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeButton(`${_Config__WEBPACK_IMPORTED_MODULE_2__.RoundData.players[1]} ${_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_WINS}`, 'vote-button', () => this.setWinner(1));
-        this.tieVote = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.ROUND_TIE, 'vote-button', () => this.setWinner(-1));
-        this.leftVote.style.display = 'none';
-        this.rightVote.style.display = 'none';
-        this.tieVote.style.display = 'none';
-        this.timer = new _components_TimerCircle__WEBPACK_IMPORTED_MODULE_1__.TimerCircle();
+        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeDiv('round-ui');
+        let round = ++_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.round;
+        _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.resetRound();
+        _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[0] = _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.selectPlayer();
+        _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[1] = _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.selectPlayer();
+        _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[0][0] = _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.selectCharacter();
+        _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[1][0] = _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.selectCharacter();
+        _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[0][1] = _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.selectPower();
+        _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[1][1] = _services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.selectPower();
+        this.title = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeText(`${_data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_TITLE} ${round}`, 'biggest-text');
+        this.topSection = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeDiv('round-top');
+        let bottomSection = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeDiv('round-bottom');
+        this.bottomTitle = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeText('', 'big-text');
+        this.bottomTitle.style.zIndex = '1';
+        this.bottomContent = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeText('', 'medium-text');
+        this.bottomContent.style.zIndex = '1';
+        [this.leftSection, this.names[0], this.cards[0][0], this.cards[0][1]] = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.ElFactory.makePlayerSection(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[0]);
+        [this.rightSection, this.names[1], this.cards[1][0], this.cards[1][1]] = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.ElFactory.makePlayerSection(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[1]);
+        this.vs = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.ROUND_VS, 'vs-text');
+        this.timer = new _components_TimerCircle__WEBPACK_IMPORTED_MODULE_2__.TimerCircle();
+        this.leftAvatar = new _components_Avatar__WEBPACK_IMPORTED_MODULE_1__.Avatar();
+        this.rightAvatar = new _components_Avatar__WEBPACK_IMPORTED_MODULE_1__.Avatar();
+        this.audience = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_4__.ImageUrl.Audience, 'round-audience');
+        this.audience.style.display = 'none';
+        this.leftAvatar.faceRight(true);
+        this.rightAvatar.faceRight(false);
+        this.roundCount = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeText(`Rounds: ${_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.round} / ${_services_GameController__WEBPACK_IMPORTED_MODULE_9__.GameController.numRounds()}`, 'small-text');
+        this.overlayWinner = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_4__.ImageUrl.OverlayWinner, 'winner-overlay');
+        this.overlayLoser = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_4__.ImageUrl.OverlayLoser, 'loser-overlay');
         ___WEBPACK_IMPORTED_MODULE_0__.Facade.showHome(true);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.addElements(this.element, this.title, this.topSection, this.bottomSection, this.timer.element);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.addElements(this.bottomSection, this.bottomTitle, this.bottomText, voteContainer, this.tieVote);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.addElements(voteContainer, this.leftVote, this.rightVote);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showBottom(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showCredits(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.hidden = false;
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.setNames(_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[0], _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.players[1]);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.setCallbacks(this.timer.skipTimer, this.timer.pauseTimer, this.setWinner);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.showButton('skip', false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.showButton('pause', false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.showButton('vote', false);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.addElements(this.element, this.title, this.topSection, this.timer.element, bottomSection);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.addElements(bottomSection, this.bottomTitle, this.bottomContent, this.audience);
+        // El.addElements(subEl, this.topSection); //this.bottomTitle, this.audience
         this.phaseIntro();
     }
     navIn() {
-        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.animateDiv)(this.title, _services_animateDiv__WEBPACK_IMPORTED_MODULE_5__.AnimationType.GROW_IN);
+        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.title, _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN);
         // animateDiv(this.element, AnimationType.GROW_IN);
-        window.addEventListener('keydown', this.onKeyDown);
     }
     navOut() {
         this.timer.destroy();
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.destroy(this.element);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_8__.El.destroy(this.element);
         //   animateDiv(this.element, AnimationType.SHRINK_OUT, 200);
         //   new JMTween({}, 1000).to({}).start().onComplete(() => {
         //     this.element.parentElement.removeChild(this.element);
         //   });
-        window.removeEventListener('keydown', this.onKeyDown);
     }
-    addLeaderboard() {
-        this.leaderboard = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.El.makeDiv('table-container');
-        let tableInner = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_6__.ElFactory.makeLeaderboard();
-        this.leaderboard.appendChild(tableInner);
-        return this.leaderboard;
-    }
-    setWinner(player) {
-        if (!this.canVote)
-            return;
-        if (this.winner === player) {
-            this.phaseLeaderboard();
+    setCardFront(el, slug, reverse = false, power = false) {
+        if (power) {
+            el.classList.remove('card-back-power');
+            el.innerHTML = `<img src = ${_data_ImageUrl__WEBPACK_IMPORTED_MODULE_4__.ImageUrl.Powers[slug]} class = "card-image${reverse ? ' card-image-reverse' : ''}"><div class= "card-text">${_data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.POWERS[slug]}</div>`;
         }
         else {
-            this.winner = player;
-            if (player === 0) {
-                this.leftVote.classList.add('highlighted');
-                this.rightVote.classList.remove('highlighted');
-                this.tieVote.classList.remove('highlighted');
-            }
-            else if (player === 1) {
-                this.rightVote.classList.add('highlighted');
-                this.leftVote.classList.remove('highlighted');
-                this.tieVote.classList.remove('highlighted');
-            }
-            else {
-                this.rightVote.classList.remove('highlighted');
-                this.leftVote.classList.remove('highlighted');
-                this.tieVote.classList.add('highlighted');
-            }
+            el.classList.remove('card-back-character');
+            el.innerHTML = `<img src = ${_data_ImageUrl__WEBPACK_IMPORTED_MODULE_4__.ImageUrl.Characters[slug]} class = "card-image${reverse ? ' card-image-reverse' : ''}"><div class= "card-text">${_data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.CHARACTERS[slug]}</div>`;
         }
     }
 }
@@ -1329,12 +1802,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! .. */ "./src/index.ts");
 /* harmony import */ var _Config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Config */ "./src/Config.ts");
-/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
-/* harmony import */ var _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/animateDiv */ "./src/services/animateDiv.ts");
-/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
-/* harmony import */ var _services_GameController__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/GameController */ "./src/services/GameController.ts");
-/* harmony import */ var _RoundUI__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./RoundUI */ "./src/pages/RoundUI.ts");
-/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
+/* harmony import */ var _data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/ImageUrl */ "./src/data/ImageUrl.ts");
+/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
+/* harmony import */ var _services_animateDiv__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/animateDiv */ "./src/services/animateDiv.ts");
+/* harmony import */ var _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/ElementFactory */ "./src/services/ElementFactory.ts");
+/* harmony import */ var _services_GameController__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/GameController */ "./src/services/GameController.ts");
+/* harmony import */ var _RoundUI__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./RoundUI */ "./src/pages/RoundUI.ts");
+/* harmony import */ var _BaseUI__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./_BaseUI */ "./src/pages/_BaseUI.ts");
 
 
 
@@ -1343,17 +1817,70 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class SetupUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_7__.BaseUI {
+
+/* css used:
+* setup-ui
+* setup-left
+* setup-right
+* setup-content
+
+* main-logo
+* giant-button
+* info-button
+* name-element
+* delete-button
+*/
+class SetupUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_8__.BaseUI {
     constructor() {
         super();
+        this.SCROLL_SPEED = 10000;
+        this.navCircles = [];
         this.names = [];
+        this.cPage = 0;
+        this.pulsing = true;
+        this.endlessPulse = () => {
+            if (!this.pulsing)
+                return;
+            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_4__.animateDiv)(this.startGame, _services_animateDiv__WEBPACK_IMPORTED_MODULE_4__.AnimationType.SMOOTH_PULSE, 0, this.endlessPulse);
+        };
+        this.nextPage = () => {
+            this.leftImage.src = _data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__.ImageUrl.InfoPages[this.cPage];
+            this.instructions.innerHTML = _data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.InfoPages[this.cPage];
+            this.navCircles.forEach((circle, i) => {
+                if (i === this.cPage) {
+                    circle.classList.add('highlight');
+                }
+                else {
+                    circle.classList.remove('highlight');
+                }
+            });
+            this.cPage = (this.cPage + 1) % _data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__.ImageUrl.InfoPages.length;
+            this.cTimeout = window.setTimeout(this.nextPage, this.SCROLL_SPEED);
+        };
+        this.navLeft = () => {
+            window.clearTimeout(this.cTimeout);
+            this.cPage = this.cPage - 2;
+            if (this.cPage < 0)
+                this.cPage += _data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__.ImageUrl.InfoPages.length;
+            this.nextPage();
+        };
+        this.navRight = () => {
+            window.clearTimeout(this.cTimeout);
+            this.nextPage();
+        };
         this.navGame = () => {
             this.updatePlayers();
-            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _RoundUI__WEBPACK_IMPORTED_MODULE_6__.RoundUI());
+            if (_Config__WEBPACK_IMPORTED_MODULE_1__.SessionData.players.length <= 1) {
+                _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.ElFactory.makeAlert('You must have 2 or more players.');
+                return;
+            }
+            ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _RoundUI__WEBPACK_IMPORTED_MODULE_7__.RoundUI());
         };
         this.addNameElement = (name) => {
             let last = this.names[this.names.length - 1];
             if (last && last.input.value === '')
+                return;
+            if (this.names.length >= 14)
                 return;
             let el = this.makeNameElement();
             this.nameContainer.appendChild(el.element);
@@ -1361,6 +1888,8 @@ class SetupUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_7__.BaseUI {
             this.names.push(el);
             if (name)
                 el.input.value = name;
+            if (this.names.length >= 14)
+                this.addButton.style.display = 'none';
             return el;
         };
         this.removeNameElement = (el) => {
@@ -1369,19 +1898,21 @@ class SetupUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_7__.BaseUI {
             this.nameContainer.removeChild(el.element);
             let i = this.names.indexOf(el);
             this.names.splice(i, 1);
+            this.addButton.style.removeProperty('display');
         };
         this.makeNameElement = () => {
-            let element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeDiv();
+            let element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeDiv();
             let input = document.createElement('input');
             input.classList.add('name-element');
+            input.maxLength = 12;
             let m = { input, element };
-            let deleteB = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeButton('X', 'delete-button', () => this.removeNameElement(m));
+            let deleteB = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeButton('X', 'delete-button', () => this.removeNameElement(m));
             element.appendChild(deleteB);
-            _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(element, input, deleteB);
+            _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.addElements(element, input, deleteB);
             return m;
         };
         this.updatePlayers = () => {
-            _services_GameController__WEBPACK_IMPORTED_MODULE_5__.GameController.resetSession(this.names.map(el => el.input.value));
+            _services_GameController__WEBPACK_IMPORTED_MODULE_6__.GameController.resetSession(this.names.map(el => el.input.value));
         };
         this.onKeyDown = (e) => {
             if (e.key === 'Enter') {
@@ -1400,42 +1931,67 @@ class SetupUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_7__.BaseUI {
                 console.log(index);
             }
         };
-        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeDiv('setup-ui');
-        this.title = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.SETUP_TITLE, 'title');
-        let middle = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeDiv('horizontal-stack');
-        let leftSection = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeDiv('vertical-stack');
-        let rightSection = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeDiv('vertical-stack');
-        this.nameContainer = leftSection;
-        this.leftHeader = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.SETUP_PLAYER_TITLE, 'sub-title');
-        this.rightHeader = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.SETUP_OPTIONS_TITLE, 'sub-title');
-        this.rightContent = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.SETUP_OPTIONS_TEXT, 'big-text');
-        this.addButton = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.BUTTON_ADD, 'info-button', () => this.addNameElement());
-        this.startGame = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.BUTTON_START, 'info-button', this.navGame);
-        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showHome(true);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(leftSection, this.leftHeader, this.addButton);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(rightSection, this.rightHeader, this.rightContent, this.startGame);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(middle, leftSection, rightSection);
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.addElements(this.element, this.title, middle);
-        leftSection.style.justifyContent = 'flex-start';
-        leftSection.style.gap = '10px';
+        this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeDiv('setup-ui');
+        let top = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeDiv('setup-ui-top');
+        let leftSide = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeDiv('setup-left');
+        let rightSide = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeDiv('setup-right');
+        let divider = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__.ImageUrl.Divider);
+        divider.style.height = '85vh';
+        // let centerLine = El.makeDiv('setup-line');
+        this.leftImage = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__.ImageUrl.Logo, 'setup-logo');
+        this.leftHeader = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.INFO_TITLE, 'biggest-text');
+        this.rightHeader = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.SETUP_PLAYER_TITLE, 'biggest-text');
+        this.instructions = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.SETUP_OPTIONS_TEXT, 'medium-text');
+        this.instructions.style.width = '90%';
+        this.navigation = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeDiv('setup-nav-container');
+        let leftNav = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeButton('<', 'small-button', this.navLeft);
+        let rightNav = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeButton('>', 'small-button', this.navRight);
+        this.rightContent = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeDiv('setup-content');
+        this.startGame = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.BUTTON_START, 'wide-button', this.navGame);
+        this.startGame.style.fontSize = '6em';
+        this.addButton = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.BUTTON_ADD, 'black-button', () => this.addNameElement());
+        // private makeBottomBar = () => {
+        let bottom = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeDiv('bottom-bar');
+        // let bottomText = El.makeText(StringData.BOTTOM_DESCRIPTION, 'small-text');
+        // let TOGraphic = El.makeImg(ImageUrl.ToJam, 'bottom-image');
+        // let GHGraphic = El.makeImg(ImageUrl.GameHive, 'bottom-image');
+        // },
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.addElements(this.element, top, bottom);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.addElements(top, leftSide, divider, rightSide);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.addElements(bottom, this.navigation, this.startGame);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.addElements(leftSide, this.leftHeader, this.leftImage, this.instructions);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.addElements(rightSide, this.rightHeader, this.rightContent);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.addElements(this.rightContent, this.addButton);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.addElements(this.navigation, leftNav);
+        for (let i = 0; i < _data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__.ImageUrl.InfoPages.length; i++) {
+            let circle = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.makeDiv('nav-circle');
+            this.navCircles.push(circle);
+            _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.addElements(this.navigation, circle);
+        }
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.addElements(this.navigation, rightNav);
+        this.nameContainer = this.rightContent;
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showHome(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showBottom(false);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.showCredits(true);
+        ___WEBPACK_IMPORTED_MODULE_0__.Facade.controlBar.hidden = true;
         this.loadNames();
-        // this.names.forEach(el => el.element.style.transition = "transform 2s");
-        // this.addButton.style.transition = 'all 2s';
+        this.nextPage();
     }
     navIn() {
-        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.title, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.GROW_IN);
-        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.leftHeader, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.SLIDE_IN);
-        let nameDelay = 100;
-        this.names.forEach(name => {
-            (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(name.element, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.SLIDE_IN, nameDelay);
-            nameDelay += 100;
-        });
-        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.addButton, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.SLIDE_IN, nameDelay);
-        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.rightHeader, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.SLIDE_IN, 200);
-        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.rightContent, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.SLIDE_IN, 300);
-        (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.animateDiv)(this.startGame, _services_animateDiv__WEBPACK_IMPORTED_MODULE_3__.AnimationType.SLIDE_IN, nameDelay + 100);
+        // animateDiv(this.title, AnimationType.GROW_IN);
+        // animateDiv(this.leftHeader, AnimationType.SLIDE_IN);
+        // let nameDelay = 100;
+        // this.names.forEach(name => {
+        //   animateDiv(name.element, AnimationType.SLIDE_IN, nameDelay);
+        //   nameDelay += 100;
+        // });
+        // animateDiv(this.addButton, AnimationType.SLIDE_IN, nameDelay);
+        // animateDiv(this.rightHeader, AnimationType.SLIDE_IN, 200);
+        // animateDiv(this.rightContent, AnimationType.SLIDE_IN, 300);
+        // animateDiv(this.startGame, AnimationType.SLIDE_IN, nameDelay + 100);
         // animateDiv(this.element, AnimationType.GROW_IN);
         window.addEventListener('keydown', this.onKeyDown);
+        this.endlessPulse();
     }
     navOut() {
         // animateDiv(this.element, AnimationType.SHRINK_OUT, 200);
@@ -1443,8 +1999,10 @@ class SetupUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_7__.BaseUI {
         // new JMTween({}, 1000).to({}).start().onComplete(() => {
         //   this.element.parentElement.removeChild(this.element);
         // });
-        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.destroy(this.element);
+        _services_ElementFactory__WEBPACK_IMPORTED_MODULE_5__.El.destroy(this.element);
         window.removeEventListener('keydown', this.onKeyDown);
+        window.clearTimeout(this.cTimeout);
+        this.pulsing = false;
     }
     loadNames() {
         _Config__WEBPACK_IMPORTED_MODULE_1__.SessionData.players.forEach(el => {
@@ -1492,7 +2050,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Config */ "./src/Config.ts");
 /* harmony import */ var _data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/ImageUrl */ "./src/data/ImageUrl.ts");
 /* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
-/* harmony import */ var _pages_MainUI__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../pages/MainUI */ "./src/pages/MainUI.ts");
+/* harmony import */ var _pages_CreditsUI__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../pages/CreditsUI */ "./src/pages/CreditsUI.ts");
+/* harmony import */ var _pages_SetupUI__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../pages/SetupUI */ "./src/pages/SetupUI.ts");
+
 
 
 
@@ -1549,15 +2109,25 @@ const ElFactory = {
     },
     makeBottomBar: () => {
         let bottom = El.makeDiv('bottom-bar');
-        let bottomText = El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.BOTTOM_DESCRIPTION);
+        let bottomText = El.makeText(_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.BOTTOM_DESCRIPTION, 'small-text');
         let TOGraphic = El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__.ImageUrl.ToJam, 'bottom-image');
         let GHGraphic = El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__.ImageUrl.GameHive, 'bottom-image');
         El.addElements(bottom, bottomText, GHGraphic, TOGraphic);
         return bottom;
     },
     makeHomeButton: () => {
-        let home = El.makeButton(_data_StringData__WEBPACK_IMPORTED_MODULE_3__.StringData.BUTTON_HOME, 'home-button', () => ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _pages_MainUI__WEBPACK_IMPORTED_MODULE_4__.MainUI()));
+        let home = El.makeButton('', 'home-button', () => ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _pages_SetupUI__WEBPACK_IMPORTED_MODULE_5__.SetupUI()));
+        let img = El.makeImg(_data_ImageUrl__WEBPACK_IMPORTED_MODULE_2__.ImageUrl.IconHome);
+        img.style.width = '3em';
+        home.appendChild(img);
         return home;
+    },
+    makeCreditsButton: () => {
+        let credits = El.makeButton('Credits', 'credits-button', () => ___WEBPACK_IMPORTED_MODULE_0__.Facade.navTo(new _pages_CreditsUI__WEBPACK_IMPORTED_MODULE_4__.CreditsUI()));
+        // let img = El.makeImg(ImageUrl.IconCredits);
+        // img.style.width = '3em';
+        // credits.appendChild(img);
+        return credits;
     },
     makeLeaderboard: () => {
         let tableInner = document.createElement('table');
@@ -1580,7 +2150,7 @@ const ElFactory = {
         });
         return tableInner;
     },
-    makePlayerSection: (name, card1, card2) => {
+    makePlayerSection: (name) => {
         let section = El.makeDiv('player-section');
         let cardSection = El.makeDiv('card-section');
         let nameTitle = El.makeText(name, 'name-title');
@@ -1649,9 +2219,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "GameController": () => (/* binding */ GameController)
 /* harmony export */ });
 /* harmony import */ var _Config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Config */ "./src/Config.ts");
-/* harmony import */ var _data_Cards__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/Cards */ "./src/data/Cards.ts");
-/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
-
+/* harmony import */ var _data_StringData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/StringData */ "./src/data/StringData.ts");
 
 
 const GameController = {
@@ -1671,6 +2239,7 @@ const GameController = {
     },
     resetSession: (players) => {
         _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players = players.filter(el => el !== '').map(slug => ({ slug, score: 0, plays: 0 }));
+        _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.plays_each = GameController.calculatePlays(_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players.length);
         console.log(_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players);
         _Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.round = 0;
         _Config__WEBPACK_IMPORTED_MODULE_0__.RoundData.players = [];
@@ -1679,7 +2248,10 @@ const GameController = {
     },
     selectCharacter: () => {
         if (_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.characterDeck.length === 0) {
-            _data_Cards__WEBPACK_IMPORTED_MODULE_1__.Cards.Characters.forEach(card => _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.characterDeck.push(card));
+            for (let i = 0; i < _data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.CHARACTERS.length; i++) {
+                _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.characterDeck.push(i);
+            }
+            // Cards.Characters.forEach(card => SessionData.characterDeck.push(card));
         }
         let index = Math.floor(Math.random() * _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.characterDeck.length);
         let m = _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.characterDeck[index];
@@ -1688,7 +2260,10 @@ const GameController = {
     },
     selectPower: () => {
         if (_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.powerDeck.length === 0) {
-            _data_Cards__WEBPACK_IMPORTED_MODULE_1__.Cards.Powers.forEach(card => _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.powerDeck.push(card));
+            for (let i = 0; i < _data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.POWERS.length; i++) {
+                _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.powerDeck.push(i);
+            }
+            // Cards.Powers.forEach(card => SessionData.powerDeck.push(card));
         }
         let index = Math.floor(Math.random() * _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.powerDeck.length);
         let m = _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.powerDeck[index];
@@ -1704,10 +2279,23 @@ const GameController = {
         GameController.resetSession(_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players.map(el => el.slug));
     },
     isGameOver: () => {
-        return !_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players.some(el => el.plays < 2);
+        return !_Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players.some(el => el.plays < _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.plays_each);
+    },
+    numRounds: () => {
+        return _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.players.length * _Config__WEBPACK_IMPORTED_MODULE_0__.SessionData.plays_each / 2;
+    },
+    calculatePlays: (numPlayers) => {
+        if (numPlayers === 2) {
+            return 3;
+            // } else if (numPlayers > 5 && numPlayers % 2 === 0) {
+            //   return 1;
+        }
+        else {
+            return 2;
+        }
     },
 };
-GameController.resetSession(_data_StringData__WEBPACK_IMPORTED_MODULE_2__.StringData.DEFAULT_NAMES);
+GameController.resetSession(_data_StringData__WEBPACK_IMPORTED_MODULE_1__.StringData.DEFAULT_NAMES);
 
 
 /***/ }),
@@ -1741,8 +2329,9 @@ var AnimationType;
     AnimationType[AnimationType["GROW_IN"] = 10] = "GROW_IN";
     AnimationType[AnimationType["SHRINK_OUT"] = 11] = "SHRINK_OUT";
     AnimationType[AnimationType["PULSE"] = 12] = "PULSE";
-    AnimationType[AnimationType["FLIP_A"] = 13] = "FLIP_A";
-    AnimationType[AnimationType["FLIP_B"] = 14] = "FLIP_B";
+    AnimationType[AnimationType["SMOOTH_PULSE"] = 13] = "SMOOTH_PULSE";
+    AnimationType[AnimationType["FLIP_A"] = 14] = "FLIP_A";
+    AnimationType[AnimationType["FLIP_B"] = 15] = "FLIP_B";
 })(AnimationType || (AnimationType = {}));
 function animateDiv(element, index, delay = 0, onComplete) {
     let obj = { height: 1, width: 1, rotation: 0, x: 0, y: 0 };
@@ -1825,6 +2414,12 @@ function animateDiv(element, index, delay = 0, onComplete) {
             obj.height = 1;
             applyTransform(element, obj);
             new _JMGE_JMTween__WEBPACK_IMPORTED_MODULE_0__.JMTween(obj, 250).wait(delay).to({ width: 1.3, height: 1.3 }).onUpdate(() => applyTransform(element, obj)).easing(_JMGE_JMTween__WEBPACK_IMPORTED_MODULE_0__.JMEasing.Quadratic.InOut).yoyo(true, 1).onComplete(() => { element.style.transform = ''; onComplete && onComplete(); }).start();
+            break;
+        case AnimationType.SMOOTH_PULSE:
+            obj.width = 1;
+            obj.height = 1;
+            applyTransform(element, obj);
+            new _JMGE_JMTween__WEBPACK_IMPORTED_MODULE_0__.JMTween(obj, 800).wait(delay).to({ width: 1.1, height: 1.1 }).onUpdate(() => applyTransform(element, obj)).easing(_JMGE_JMTween__WEBPACK_IMPORTED_MODULE_0__.JMEasing.Quadratic.InOut).yoyo(true, 1).onComplete(() => { element.style.transform = ''; onComplete && onComplete(); }).start();
             break;
         case AnimationType.FLIP_A:
             obj.width = 1;

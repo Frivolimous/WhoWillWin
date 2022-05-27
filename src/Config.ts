@@ -10,7 +10,7 @@ export const SessionData = {
     player_left: 20,
     player_right: 20,
     open: 30,
-    vote: 30,
+    vote: 20,
     vote2: 10,
     leaderboard: 10,
   },

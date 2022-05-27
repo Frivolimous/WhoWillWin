@@ -77,7 +77,9 @@ export class MainUI extends BaseUI {
       this.GTimerOn = true;
       window.setTimeout(() => this.GTimerOn = false, 1000);
     } else if (e.key === 'h') {
-      this.enableGHMode();
+      if (this.GTimerOn) {
+        this.enableGHMode();
+      }
     }
   }
 

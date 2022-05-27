@@ -23,7 +23,7 @@ const SessionData = {
         player_left: 20,
         player_right: 20,
         open: 30,
-        vote: 30,
+        vote: 20,
         vote2: 10,
         leaderboard: 10,
     },
@@ -1095,6 +1095,35 @@ const EnglishStringData = {
         'Boss Joe',
         'Sword Master',
     ],
+    CHARACTER_REVERSIBLE: [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ],
     GHCHARACTERS: [
         'Boss Joe',
         'Sword Master',
@@ -1109,30 +1138,62 @@ const EnglishStringData = {
         'Master Sword',
         'Teleportation',
         'Shrinking Power',
-        'Giantness',
+        'Super Sized',
         'Time Control',
         'Invisibility',
-        'Unlimited Wealth',
+        'Unlimited Cash',
         'Summoning',
         'Cloning',
         'Healing Powers',
-        'Super Cuteness',
+        'Irresistibly Cute',
         'Bazooka',
         'Super Strength',
-        'Buzzsaw',
+        'Black Hole',
         'Crafting Shards',
         'Dragon Balls',
         'Poop',
         'Pokeball',
-        'Good Luck',
+        'Unbelievable Luck',
         'Critical Hit!',
         'Bacon Grease',
         'Fairy Magic',
-        'Groovy Beats',
-        'Power Up',
+        'Mega Speakers',
+        'Random Item',
+    ],
+    POWER_REVERSIBLE: [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
     ],
     GHPOWERS: [
-        'Power Up',
+        'Random Item',
         'Crafting Shards',
     ],
 };
@@ -1545,7 +1606,9 @@ class MainUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_8__.BaseUI {
                 window.setTimeout(() => this.GTimerOn = false, 1000);
             }
             else if (e.key === 'h') {
-                this.enableGHMode();
+                if (this.GTimerOn) {
+                    this.enableGHMode();
+                }
             }
         };
         this.element = _services_ElementFactory__WEBPACK_IMPORTED_MODULE_4__.El.makeDiv('main-ui');
@@ -1647,11 +1710,11 @@ class RoundUI extends _BaseUI__WEBPACK_IMPORTED_MODULE_11__.BaseUI {
                 this.cards[1][0].classList.add('card-back-character');
                 this.cards[1][1].classList.add('card-back-power');
                 (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN, 2500, () => (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_A, 0, () => {
-                    this.setCardFront(this.cards[0][0], _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[0][0], true, false);
+                    this.setCardFront(this.cards[0][0], _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[0][0], _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.CHARACTER_REVERSIBLE[_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[0][0]], false);
                     (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_B);
                 }));
                 (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN, 2600, () => (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_A, 0, () => {
-                    this.setCardFront(this.cards[0][1], _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[0][1], true, true);
+                    this.setCardFront(this.cards[0][1], _Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[0][1], _data_StringData__WEBPACK_IMPORTED_MODULE_5__.StringData.POWER_REVERSIBLE[_Config__WEBPACK_IMPORTED_MODULE_3__.RoundData.cards[0][1]], true);
                     (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[0][1], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_B);
                 }));
                 (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.GROW_IN, 3000, () => (0,_services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.animateDiv)(this.cards[1][0], _services_animateDiv__WEBPACK_IMPORTED_MODULE_7__.AnimationType.FLIP_A, 0, () => {

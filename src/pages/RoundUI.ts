@@ -126,11 +126,11 @@ export class RoundUI extends BaseUI {
       this.cards[1][0].classList.add('card-back-character');
       this.cards[1][1].classList.add('card-back-power');
       animateDiv(this.cards[0][0], AnimationType.GROW_IN, 2500, () => animateDiv(this.cards[0][0], AnimationType.FLIP_A, 0, () => {
-        this.setCardFront(this.cards[0][0], RoundData.cards[0][0], true, false);
+        this.setCardFront(this.cards[0][0], RoundData.cards[0][0], StringData.CHARACTER_REVERSIBLE[RoundData.cards[0][0]], false);
         animateDiv(this.cards[0][0], AnimationType.FLIP_B);
       }));
       animateDiv(this.cards[0][1], AnimationType.GROW_IN, 2600, () => animateDiv(this.cards[0][1], AnimationType.FLIP_A, 0, () => {
-        this.setCardFront(this.cards[0][1], RoundData.cards[0][1], true, true);
+        this.setCardFront(this.cards[0][1], RoundData.cards[0][1], StringData.POWER_REVERSIBLE[RoundData.cards[0][1]], true);
         animateDiv(this.cards[0][1], AnimationType.FLIP_B);
       }));
       animateDiv(this.cards[1][0], AnimationType.GROW_IN, 3000, () => animateDiv(this.cards[1][0], AnimationType.FLIP_A, 0, () => {

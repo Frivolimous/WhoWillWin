@@ -38,6 +38,7 @@ export class SetupUI extends BaseUI {
   private names: IInputElement[] = [];
   private addButton: HTMLButtonElement;
   private startGame: HTMLButtonElement;
+  private pauseMode: HTMLButtonElement;
 
   private cPage: number = 0;
   private cTimeout: number;
@@ -65,6 +66,7 @@ export class SetupUI extends BaseUI {
     this.rightContent = El.makeDiv('setup-content');
     this.startGame = El.makeButton(StringData.BUTTON_START, 'wide-button', this.navGame);
     this.startGame.style.fontSize = '6em';
+    this.pauseMode = El.makeButton(StringData.BUTTON_MODE_TIMER, 'wide-button', this.toggleMode);
     this.addButton = El.makeButton(StringData.BUTTON_ADD, 'black-button', () => this.addNameElement());
 
     // private makeBottomBar = () => {
@@ -76,7 +78,7 @@ export class SetupUI extends BaseUI {
 
     El.addElements(this.element, top, bottom);
     El.addElements(top, leftSide, divider, rightSide);
-    El.addElements(bottom, this.navigation, this.startGame);
+    El.addElements(bottom, this.navigation, this.pauseMode, this.startGame);
     El.addElements(leftSide, this.leftHeader, this.leftImage, this.instructions);
     El.addElements(rightSide, this.rightHeader, this.rightContent);
     El.addElements(this.rightContent, this.addButton);
@@ -94,7 +96,7 @@ export class SetupUI extends BaseUI {
     Facade.showBottom(false);
     Facade.showCredits(true);
     Facade.controlBar.hidden = true;
-
+    
     this.loadNames();
     this.nextPage();
   }
@@ -229,6 +231,15 @@ export class SetupUI extends BaseUI {
         let newEl = this.addNameElement();
         if (newEl) newEl.input.focus();
       }
+    }
+  }
+
+  private toggleMode = () => {
+    GameController.pauseMode = !GameController.pauseMode;
+    if (GameController.pauseMode) {
+      this.pauseMode.innerHTML = StringData.BUTTON_MODE_WAIT;
+    } else {
+      this.pauseMode.innerHTML = StringData.BUTTON_MODE_TIMER;
     }
   }
 }

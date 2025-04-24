@@ -1,3 +1,4 @@
+import { GameController } from '../services/GameController';
 import { RoundData } from '../Config';
 import { StringData } from '../data/StringData';
 import { animateDiv, AnimationType } from '../services/animateDiv';
@@ -72,8 +73,12 @@ export class BottomControls {
     animateDiv(this.voteRight, AnimationType.PULSE, 400);
   }
 
-  public showButton(button: 'skip' | 'pause' | 'vote', value: boolean = true) {
+  public showButton(button: 'skip' | 'pause' | 'vote' | 'next', value: boolean = true) {
     if (button === 'skip') {
+      this.skip.innerHTML = StringData.BUTTON_SKIP;
+      this.toggleVisible(this.skip, value);
+    } else if (button === 'next') {
+      this.skip.innerHTML = StringData.BUTTON_NEXT;
       this.toggleVisible(this.skip, value);
     } else if (button === 'pause') {
       this.toggleVisible(this.pause, value);

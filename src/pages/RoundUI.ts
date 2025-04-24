@@ -146,8 +146,12 @@ export class RoundUI extends BaseUI {
       this.bottomTitle.innerHTML = StringData.ROUND_INTRO_TITLE;
       animateDiv(this.bottomTitle, AnimationType.GROW_IN, 3500, () => {
         this.timer.canSkip = true;
-        Facade.controlBar.showButton('skip', true);
-        Facade.controlBar.showButton('pause', true);
+        if (GameController.pauseMode) {
+          Facade.controlBar.showButton('next', true);
+        } else {
+          Facade.controlBar.showButton('skip', true);
+          Facade.controlBar.showButton('pause', true);
+        }
       });
     });
 
@@ -159,13 +163,19 @@ export class RoundUI extends BaseUI {
   private phaseLeftPlay = () => {
     this.bottomTitle.innerHTML = `${RoundData.players[0]}, ${StringData.ROUND_PLAY_TITLE}`;
     this.leftSection.classList.add('left-highlight');
-    this.timer.reset(SessionData.timing.player_left).blinkAt(SessionData.blinkTiming.player_left).onComplete(this.phaseRightPlay).start();
-    Facade.controlBar.onTimerRefreshed();
-    this.timer.canSkip = true;
-    this.timer.element.classList.add('timer-left');
     this.leftSection.appendChild(this.leftAvatar.element);
     this.rightSection.appendChild(this.rightAvatar.element);
-    this.leftSection.appendChild(this.timer.element);
+    if (GameController.pauseMode) {
+      this.timer.onComplete(this.phaseRightPlay);
+      this.timer.canSkip = true;
+      this.timer.element.parentElement.removeChild(this.timer.element);
+    } else {
+      this.timer.reset(SessionData.timing.player_left).blinkAt(SessionData.blinkTiming.player_left).onComplete(this.phaseRightPlay).start();
+      Facade.controlBar.onTimerRefreshed();
+      this.timer.canSkip = true;
+      this.timer.element.classList.add('timer-left');
+      this.leftSection.appendChild(this.timer.element);
+    }
     this.rightAvatar.setState('passive');
 
     animateDiv(this.bottomTitle, AnimationType.BASIC_POP, 200);
@@ -177,11 +187,15 @@ export class RoundUI extends BaseUI {
     this.bottomTitle.innerHTML = `${RoundData.players[1]}, ${StringData.ROUND_PLAY_TITLE}`;
     this.leftSection.classList.remove('left-highlight');
     this.rightSection.classList.add('right-highlight');
-    this.timer.reset(SessionData.timing.player_right).blinkAt(SessionData.blinkTiming.player_right).onComplete(this.phaseOpen).start();
-    Facade.controlBar.onTimerRefreshed();
-    this.timer.element.classList.remove('timer-left');
-    this.timer.element.classList.add('timer-right');
-    this.rightSection.appendChild(this.timer.element);
+    if (GameController.pauseMode) {
+      this.timer.onComplete(this.phaseVote);
+    } else {
+      this.timer.reset(SessionData.timing.player_right).blinkAt(SessionData.blinkTiming.player_right).onComplete(this.phaseOpen).start();
+      Facade.controlBar.onTimerRefreshed();
+      this.timer.element.classList.remove('timer-left');
+      this.timer.element.classList.add('timer-right');
+      this.rightSection.appendChild(this.timer.element);
+    }
     this.rightAvatar.setState('active');
     this.leftAvatar.setState('passive');
 
@@ -198,11 +212,15 @@ export class RoundUI extends BaseUI {
 
     this.bottomTitle.innerHTML = StringData.ROUND_OPEN_TITLE;
     this.bottomContent.innerHTML = StringData.ROUND_OPEN_TEXT;
-    this.leftSection.classList.add('left-highlight');
-    this.timer.reset(SessionData.timing.open).blinkAt(SessionData.blinkTiming.open).onComplete(this.phaseVote).start();
-    Facade.controlBar.onTimerRefreshed();
-    this.timer.element.classList.remove('timer-right');
-    this.element.appendChild(this.timer.element);
+    this.leftSection.classList.add('left-highlight'); 
+    if (GameController.pauseMode) {
+      this.timer.onComplete(this.phaseVote);
+    } else {
+      this.timer.reset(SessionData.timing.open).blinkAt(SessionData.blinkTiming.open).onComplete(this.phaseVote).start();
+      Facade.controlBar.onTimerRefreshed();
+      this.timer.element.classList.remove('timer-right');
+      this.element.appendChild(this.timer.element);
+    }
     this.rightAvatar.setState('active');
     this.leftAvatar.setState('active');
 
@@ -220,10 +238,15 @@ export class RoundUI extends BaseUI {
     this.leftSection.classList.remove('left-highlight');
     this.rightSection.classList.remove('right-highlight');
     Facade.controlBar.showButton('vote', true);
-    this.timer.reset(SessionData.timing.vote).blinkAt(SessionData.blinkTiming.vote).onComplete(this.phaseVote2).start();
-    Facade.controlBar.onTimerRefreshed();
-    this.timer.element.classList.remove('timer-right');
-    this.element.appendChild(this.timer.element);
+    if (GameController.pauseMode) {
+      this.timer.onComplete(this.phaseVote2);
+      Facade.controlBar.showButton('next', false);
+    } else {
+      this.timer.reset(SessionData.timing.vote).blinkAt(SessionData.blinkTiming.vote).onComplete(this.phaseVote2).start();
+      Facade.controlBar.onTimerRefreshed();
+      this.timer.element.classList.remove('timer-right');
+      this.element.appendChild(this.timer.element);
+    }
 
     this.rightAvatar.setState('ready');
     this.leftAvatar.setState('ready');
@@ -258,6 +281,10 @@ export class RoundUI extends BaseUI {
     if (!this.winner && this.winner !== 0) this.winner = -1;
     RoundData.winner = this.winner;
 
+    this.element.appendChild(this.timer.element);
+    if (GameController.pauseMode) {
+      Facade.controlBar.showButton('skip', true);
+    }
     this.timer.reset(SessionData.timing.leaderboard).blinkAt(SessionData.blinkTiming.leaderboard).onComplete(this.navGame).start();
     Facade.controlBar.onTimerRefreshed();
 

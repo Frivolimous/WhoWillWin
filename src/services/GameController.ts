@@ -3,6 +3,7 @@ import { StringData } from '../data/StringData';
 
 export const GameController = {
   GHMode: false,
+  pauseMode: false,
 
   selectPlayer: () => {
     let minPlay = Math.min(...SessionData.players.map(el => el.plays));

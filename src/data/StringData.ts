@@ -59,6 +59,9 @@ export const EnglishStringData = {
   BUTTON_INSTRUCTIONS: 'Instructions',
   BUTTON_MAIN_MENU: 'Main Menu',
   BUTTON_PLAY_AGAIN: 'Play Again!',
+  BUTTON_MODE_TIMER: 'Auto-Play',
+  BUTTON_MODE_WAIT: 'Manual Turns',
+  BUTTON_NEXT: 'Next',
   INFO_TITLE: 'How to Play',
 
   BOTTOM_DESCRIPTION: 'Created by Jeremy Moshe and Debbie Chan, 2022, as part of TO Jam.',
